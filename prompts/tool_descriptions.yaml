@@ -1,0 +1,5 @@
+default:
+  search_wikipedia: >-
+    Search Wikipedia for a query and return article summaries.
+    Use this to look up factual information about people, places,
+    events, concepts, etc.

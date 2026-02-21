@@ -1,0 +1,5 @@
+default:
+  agent_config: default
+  prompt: default
+  dataset: data/questions.jsonl
+  output_dir: outputs
