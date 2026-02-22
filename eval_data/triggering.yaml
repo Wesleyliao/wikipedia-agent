@@ -1,0 +1,40 @@
+- query: "What is the population of Tokyo?"
+  wiki_tool_call_expected: true
+- query: "Tell me about the history of the Roman Empire."
+  wiki_tool_call_expected: true
+- query: "What is 2 + 2?"
+  wiki_tool_call_expected: false
+- query: "Translate 'hello' to French."
+  wiki_tool_call_expected: false
+- query: "Who was Nikola Tesla?"
+  wiki_tool_call_expected: true
+- query: "Write a haiku about rain."
+  wiki_tool_call_expected: false
+- query: "When was the Great Wall of China built?"
+  wiki_tool_call_expected: true
+- query: "Summarize the plot of Hamlet."
+  wiki_tool_call_expected: true
+- query: "What is the square root of 144?"
+  wiki_tool_call_expected: false
+- query: "Explain what photosynthesis is."
+  wiki_tool_call_expected: true
+- query: "Write me a Python function that reverses a string."
+  wiki_tool_call_expected: false
+- query: "What are the symptoms of malaria?"
+  wiki_tool_call_expected: true
+- query: "Who won the Nobel Prize in Physics in 1921?"
+  wiki_tool_call_expected: true
+- query: "Can you reword this sentence: 'The cat sat on the mat'?"
+  wiki_tool_call_expected: false
+- query: "What caused the extinction of the dinosaurs?"
+  wiki_tool_call_expected: true
+- query: "List the first 10 prime numbers."
+  wiki_tool_call_expected: false
+- query: "What is the GDP of Germany?"
+  wiki_tool_call_expected: true
+- query: "Help me brainstorm names for a coffee shop."
+  wiki_tool_call_expected: false
+- query: "What is the Krebs cycle?"
+  wiki_tool_call_expected: true
+- query: "Convert 100 degrees Fahrenheit to Celsius."
+  wiki_tool_call_expected: false

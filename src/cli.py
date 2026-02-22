@@ -44,19 +44,32 @@ def ask(query, config_name, verbose):
 
 
 @cli.command()
-@click.argument("eval_config", default="default")
-def evals(eval_config):
-    """Run evaluations against the agent.
+@click.argument("base")
+@click.option(
+    "--test",
+    default=None,
+    help="Test agent config name for side-by-side comparison.",
+)
+@click.option(
+    "--verbose", "-v",
+    is_flag=True,
+    help="Print progress to stderr.",
+)
+def evals(base, test, verbose):
+    """Run all evaluations defined in configs/evals.yaml.
 
     \b
-    EVAL_CONFIG is the eval config name (top-level key in configs/evals.yaml).
+    BASE is the agent config name for the base side.
+
+    \b
+    Examples:
+        python -m src.cli evals default
+        python -m src.cli evals default --test fast -v
     """
-    # TODO: implement eval runner
-    #   - load eval config from configs/evals.yaml[eval_config]
-    #   - load dataset from the path specified in eval config
-    #   - for each question, call run_agent() with the configured agent_config/prompts
-    #   - write results to outputs/
-    raise click.ClickException("Eval runner not yet implemented.")
+    from src.eval.runner import run_eval
+
+    run_dir = run_eval(base_agent=base, test_agent=test, verbose=verbose)
+    click.echo(f"Eval run complete: {run_dir}")
 
 
 if __name__ == "__main__":

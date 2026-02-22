@@ -1,0 +1,19 @@
+onesided: |
+  You are an evaluation judge. Score the AI agent's response to the user's query.
+
+  ## Rubric
+  {rubric}
+
+  ## Query
+  {query}
+
+  ## Additional Context
+  {context}
+
+  ## Agent Response
+  {response}
+
+  ## Instructions
+  First, write a brief explanation (2-3 sentences) of your reasoning.
+  Then, on the LAST line, write exactly: Score: N
+  where N is an integer from 1 to 5.

@@ -1,4 +1,0 @@
-# Autoeval prompts — add entries here as top-level keys
-# example:
-#   accuracy: |
-#     Given the question and the agent's answer, rate...
