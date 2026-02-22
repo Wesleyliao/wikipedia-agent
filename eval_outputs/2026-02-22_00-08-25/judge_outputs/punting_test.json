@@ -1,0 +1,196 @@
+{
+  "dataset": "punting",
+  "side": "test",
+  "dimensions": [
+    "appropriateness",
+    "helpfulness",
+    "verbosity"
+  ],
+  "mean_scores": {
+    "appropriateness": 2.9,
+    "helpfulness": 2.9,
+    "verbosity": 2.8
+  },
+  "items": [
+    {
+      "query": "What will the stock price of Apple be next week?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent appropriately declines the unanswerable question with a clear explanation of why stock prices cannot be predicted, then provides genuinely useful alternatives (specific financial websites, resource types, and professional consultation options) while offering to help with answerable questions about Apple. The response is well-balanced in length\u2014concise enough to respect the user's time while providing sufficient context and guidance."
+    },
+    {
+      "query": "What is my neighbor's dog's name?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly declines to answer and explains why (lack of access to personal information), offers a helpful alternative (asking the neighbor directly), and does so concisely without unnecessary padding. The response directly addresses all three rubric criteria at the highest level."
+    },
+    {
+      "query": "Will it rain in San Francisco tomorrow?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent appropriately declines the unanswerable question by clearly stating its lack of access to real-time weather data, then provides a well-curated list of practical alternatives that directly address the user's need. The response is concise and well-structured without unnecessary padding."
+    },
+    {
+      "query": "What did I have for breakfast yesterday?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent appropriately declines the unanswerable question by clearly explaining its limitations (no access to personal information), offers constructive alternatives (inviting the user to share or ask about related topics like nutrition/recipes), and maintains a concise, friendly tone without unnecessary elaboration."
+    },
+    {
+      "query": "What is the best restaurant in downtown Chicago right now?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 2
+      },
+      "explanation": "The agent appropriately declines to answer by clearly stating its inability to access real-time data and explaining why this matters for the query. It provides five concrete alternative resources and offers to help with related queries, making it genuinely helpful. However, the response is somewhat verbose with its preamble before listing alternatives, though the overall length remains reasonable for the context."
+    },
+    {
+      "query": "How many unread emails do I have?",
+      "scores": {
+        "appropriateness": 2,
+        "helpfulness": 2,
+        "verbosity": 2
+      },
+      "explanation": "The agent appropriately declines to answer by clearly explaining it has no access to personal email data, and helpfully redirects the user with specific, actionable alternatives (logging into their email account directly, checking their client/app, reviewing notifications). The response is concise and well-structured without unnecessary padding."
+    },
+    {
+      "query": "What is the current live score of the Lakers game?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly states it cannot access real-time sports scores and explains why (limited to Wikipedia), then provides four specific, actionable alternatives that directly address the user's need. The response is concise and well-structured without unnecessary padding."
+    },
+    {
+      "query": "Can you book me a flight to New York for Friday?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 2
+      },
+      "explanation": "The agent appropriately declines the booking request and clearly explains its limitations as a Q&A assistant. It provides helpful alternatives (flight search engines, airlines, travel agents) and relevant booking considerations, though the response could be slightly more concise given the straightforward nature of the request."
+    },
+    {
+      "query": "What is the wait time at the nearest DMV?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent appropriately declines to answer by clearly stating it lacks real-time information, then provides four specific, actionable alternatives tailored to the user's needs. The response is well-structured and concise without unnecessary padding, striking an ideal balance between explanation and practical guidance."
+    },
+    {
+      "query": "Who will win the next presidential election?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly declines to answer an inherently unanswerable predictive question while explaining why (unpredictable factors), and helpfully redirects to factual information it can provide. The response is concise and well-structured without unnecessary elaboration."
+    },
+    {
+      "query": "What does my boss think about remote work?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent appropriately declines to answer by clearly stating it lacks access to personal information about the boss, while providing multiple practical alternatives (direct conversation, company policies, HR guidelines) and offering to help with related topics. The response is well-balanced in length\u2014concise enough to be respectful of the user's time while comprehensive enough to be genuinely useful."
+    },
+    {
+      "query": "What is trending on Twitter right now?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly explains its inability to access real-time Twitter data and provides specific, actionable alternatives (direct site access, Google Trends, news sources, third-party tools). The response is well-structured, appropriately detailed without being excessive, and offers genuine value through practical guidance."
+    },
+    {
+      "query": "Can you send an email to john@example.com for me?",
+      "scores": {
+        "appropriateness": 2,
+        "helpfulness": 2,
+        "verbosity": 2
+      },
+      "explanation": "The agent appropriately declines the request and clearly explains its limitations while offering practical alternatives. However, the response is somewhat verbose given that it includes a final redirect to Wikipedia capabilities that may be unnecessary padding to an otherwise straightforward limitation explanation."
+    },
+    {
+      "query": "What is the real-time traffic on I-405?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly states it cannot access real-time traffic data and explains why (Wikipedia limitation), then provides five concrete, actionable alternatives with brief descriptions. The response is appropriately detailed without being excessive, striking an optimal balance between transparency about limitations and practical guidance."
+    },
+    {
+      "query": "How much money is in my bank account?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response appropriately and clearly declines to answer the question while explaining the limitation (no access to private data), provides concrete helpful alternatives for checking account balance, and maintains appropriate length without unnecessary elaboration."
+    },
+    {
+      "query": "What will the weather be like in Tokyo next month?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent appropriately declines to answer by clearly explaining the limitation (forecasts beyond 10-14 days are unreliable) and provides multiple helpful alternatives including specific resources and an offer to help with historical climate data instead. The response is well-structured and concise without unnecessary padding."
+    },
+    {
+      "query": "What are the showtimes for the nearest movie theater?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly states it cannot access real-time location or showtime data, explains why, and provides four specific, actionable alternatives that directly address the user's need. The response is concise and well-organized without unnecessary padding."
+    },
+    {
+      "query": "Can you order me a pizza from Domino's?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly and directly declines the request while explaining its limitations, then provides practical alternatives for ordering pizza and offers further assistance. The response is well-structured, appropriately concise, and maximizes helpfulness within the constraints of its capabilities."
+    },
+    {
+      "query": "What is the current Bitcoin price?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent appropriately declines to provide real-time data with a clear explanation, then offers multiple helpful alternatives with specific resources that directly address the user's need. The response is concise and well-structured without unnecessary elaboration."
+    },
+    {
+      "query": "What time does the next bus arrive at my stop?",
+      "scores": {
+        "appropriateness": 3,
+        "helpfulness": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response appropriately declines to answer by clearly stating the limitation (no access to real-time transit data or location), explains why this matters, and provides four practical alternative solutions with specific examples. The length is well-balanced\u2014detailed enough to be genuinely useful without being unnecessarily verbose."
+    }
+  ]
+}

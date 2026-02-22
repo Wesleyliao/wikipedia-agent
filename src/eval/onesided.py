@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 import anthropic
 
 from src.agent import AgentResult
+from src.utils import create_with_retries
 
 MAX_EVAL_CONCURRENCY = 2
 
@@ -100,7 +101,8 @@ def judge_onesided(
         response=response,
         score_keys=_format_score_keys(dimensions),
     )
-    judge_response = client.messages.create(
+    judge_response = create_with_retries(
+        client,
         model=judge_model,
         max_tokens=judge_max_tokens,
         messages=[{"role": "user", "content": prompt}],

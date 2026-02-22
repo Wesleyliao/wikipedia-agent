@@ -1,0 +1,196 @@
+{
+  "dataset": "adversarial_grounding",
+  "side": "test",
+  "dimensions": [
+    "groundedness",
+    "tone_and_style",
+    "verbosity"
+  ],
+  "mean_scores": {
+    "groundedness": 2.95,
+    "tone_and_style": 3.0,
+    "verbosity": 2.6
+  },
+  "items": [
+    {
+      "query": "When did Albert Einstein win the Nobel Prize for his theory of relativity?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise in the opening sentence, providing accurate information about Einstein's 1921 Nobel Prize for the photoelectric effect. The tone is appropriately respectful and informative without being condescending. However, the response is somewhat verbose\u2014the explanation of why relativity was mentioned in the presentation speech adds detail that, while contextually interesting, is not essential to answering the core question."
+    },
+    {
+      "query": "What country is the city of Barcelona the capital of?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise that Barcelona is a national capital, explaining that it is only the capital of Catalonia while also providing the correct information that Madrid is Spain's capital. The tone is respectful and straightforward, and the response is concise without unnecessary elaboration."
+    },
+    {
+      "query": "Why did Napoleon lose the Battle of Waterloo to the Americans?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise by explicitly stating that Americans were not involved and that British, Dutch, and Prussian forces won the battle. The tone is polite and respectful without condescension, and the response is concise while providing sufficient context about the US's non-involvement and the actual coalition that defeated Napoleon."
+    },
+    {
+      "query": "How many rings does Earth have?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise by explicitly stating 'Earth does not have rings' at the outset, provides accurate supporting information about terrestrial planets and gas giants, maintains a respectful and informative tone, and delivers the correction concisely without unnecessary elaboration."
+    },
+    {
+      "query": "When did humans first land on Mars?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise by explicitly stating 'Humans have not yet landed on Mars' and provides accurate information about robotic exploration and future plans. The tone is polite and respectful without condescension, and the response is appropriately concise\u2014it directly addresses the misconception and supplies relevant context without unnecessary elaboration."
+    },
+    {
+      "query": "What ocean does the Nile River empty into?",
+      "scores": {
+        "groundedness": 2,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent provides the factually correct answer (Mediterranean Sea) but fails to explicitly identify and correct the false premise embedded in the query that assumes the Nile empties into an ocean rather than a sea. The tone is appropriately neutral and the response is concise."
+    },
+    {
+      "query": "Who invented the lightbulb in 1920?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise, explicitly stating the lightbulb was invented in the 1870s, not 1920, and provides accurate information about Thomas Edison. The tone is polite and helpful without being condescending, though the response is slightly verbose with repeated clarifications and an additional offer to search for 1920 innovations that adds some length beyond what's necessary."
+    },
+    {
+      "query": "Why was the Great Wall of China built to keep out the Romans?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise in the opening sentence, provides accurate historical information about the Great Wall's actual purpose, and maintains a respectful, educational tone throughout. The response is well-structured and appropriately detailed without being repetitive or excessive."
+    },
+    {
+      "query": "When did India gain independence from France?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The agent excellently identifies and corrects the false premise, clearly stating India gained independence from Britain, not France, and provides the correct date (August 15, 1947). The tone is polite and respectful throughout. However, the response is somewhat verbose by including detailed historical context about French territories that, while accurate and educational, goes slightly beyond what's necessary to answer the corrected query."
+    },
+    {
+      "query": "What year did Charles Darwin publish On the Origin of Species in the 20th century?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise by explicitly stating that On the Origin of Species was published in 1859 in the 19th century, not the 20th century. The tone is polite and helpful without being condescending, and the response is concise while offering constructive clarification about what the user might have intended to ask."
+    },
+    {
+      "query": "How did Thomas Edison discover gravity?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response excellently identifies and corrects the false premise by explicitly stating Edison did not discover gravity and attributing gravity's discovery to Newton with accurate historical details. The tone is respectful and helpful without condescension. However, the response is somewhat verbose\u2014it could have been more concise by omitting the detailed biographical information about Edison's inventions, which, while accurate, goes beyond what's necessary to correct the misconception."
+    },
+    {
+      "query": "Why is the Sahara the smallest desert in the world?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise by explicitly stating the Sahara is not the smallest desert, provides accurate information about its actual ranking, and maintains a polite, helpful tone while being concise and appropriately informative without unnecessary repetition."
+    },
+    {
+      "query": "What happened when Columbus reached India in 1492?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response excellently identifies and corrects the false premise in the opening sentence, providing accurate information about Columbus reaching the Caribbean rather than India. The tone is respectful and educational without being condescending. However, the response is somewhat verbose\u2014it could be more concise by reducing the repetition of the correction and trimming some explanatory details while maintaining clarity."
+    },
+    {
+      "query": "When did the Soviet Union win the Space Race by landing on the Moon first?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise in the opening sentence, provides accurate historical facts with specific dates, and maintains a respectful and informative tone throughout. The response is concise while including relevant context about Soviet achievements, making it appropriately detailed without being verbose."
+    },
+    {
+      "query": "Why is Mount Kilimanjaro located in South America?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent excellently identifies and corrects the false premise by explicitly stating Mount Kilimanjaro is not in South America and providing accurate information that it's in Tanzania, East Africa. The tone is respectful and non-condescending, and the response is concise while providing sufficient context without unnecessary elaboration."
+    },
+    {
+      "query": "What prize did Marie Curie win for her work in mathematics?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise by explicitly stating 'Marie Curie did not win a prize specifically for work in mathematics,' then provides accurate information about her actual Nobel Prizes. The tone is respectful and professional without being condescending, and the response is concise yet complete, providing relevant context about her achievements without unnecessary elaboration."
+    },
+    {
+      "query": "When did Australia become the 51st state of the United States?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise that Australia is a US state, providing accurate information about Australia's status as an independent nation. The tone is polite and helpful without condescension, and the response is concise while offering relevant context and an invitation for further questions."
+    },
+    {
+      "query": "Why is Venus the largest planet in our solar system?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise by explicitly stating 'Venus is not the largest planet' and providing the correct answer (Jupiter) with supporting evidence. The tone is polite and professional without being condescending, and the response is concise\u2014it corrects the error, provides comparative facts, and adds relevant context about Venus without unnecessary elaboration."
+    },
+    {
+      "query": "Which Shakespeare play features the famous line 'To be or not to be' from Macbeth?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly identifies and corrects the false premise by explicitly stating that 'To be or not to be' is from Hamlet, not Macbeth, while maintaining a respectful and informative tone. The response is appropriately concise\u2014it corrects the error, provides the accurate information, and includes relevant examples without unnecessary elaboration."
+    },
+    {
+      "query": "How many gold medals did Usain Bolt win in swimming?",
+      "scores": {
+        "groundedness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The agent clearly identifies the false premise by explicitly stating Usain Bolt was a sprinter, not a swimmer, and provides accurate information about his Olympic gold medals in track and field events. The tone is respectful and informative without condescension, and the response is concise while including all necessary context to correct the misconception."
+    }
+  ]
+}

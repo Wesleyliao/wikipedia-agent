@@ -58,7 +58,12 @@ def ask(query, config_name, verbose):
     is_flag=True,
     help="Print progress to stderr.",
 )
-def evals(base, test, verbose):
+@click.option(
+    "--run-id",
+    default=None,
+    help="Resume a previous run by its folder name (e.g. 2026-02-22_14-30-00).",
+)
+def evals(base, test, verbose, run_id):
     """Run all evaluations defined in configs/evals.yaml.
 
     \b
@@ -68,10 +73,11 @@ def evals(base, test, verbose):
     Examples:
         python -m src.cli evals agent_v1
         python -m src.cli evals agent_v0 --test agent_v1 -v
+        python -m src.cli evals agent_v1 --run-id 2026-02-22_14-30-00
     """
     from src.eval.runner import run_eval
 
-    run_dir = run_eval(base_agent=base, test_agent=test, verbose=verbose)
+    run_dir = run_eval(base_agent=base, test_agent=test, verbose=verbose, run_id=run_id)
     click.echo(f"Eval run complete: {run_dir}")
 
 

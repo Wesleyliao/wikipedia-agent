@@ -11,8 +11,8 @@ from typing import Optional
 
 from src.agent import run_agent, AgentResult
 from src.config import PROJECT_ROOT, load_agent_config
-from src.eval.trajectory import evaluate_trajectory, TrajectoryResult
-from src.eval.onesided import evaluate_onesided, OnesidedResult, MAX_EVAL_CONCURRENCY
+from src.eval.trajectory import evaluate_trajectory, TrajectoryItem, TrajectoryResult
+from src.eval.onesided import evaluate_onesided, OnesidedItem, OnesidedResult, MAX_EVAL_CONCURRENCY
 
 
 def _load_eval_config() -> dict:
@@ -159,18 +159,77 @@ def _dump_onesided_judge(
     path.write_text(json.dumps(output, indent=2, default=str))
 
 
+def _load_trajectory_from_disk(run_dir: Path, side: str) -> dict[str, TrajectoryResult]:
+    """Load all trajectory judge outputs for a side from disk."""
+    judge_dir = run_dir / "judge_outputs"
+    results = {}
+    if not judge_dir.exists():
+        return results
+    for path in judge_dir.glob(f"*_{side}.json"):
+        data = json.loads(path.read_text())
+        if "metrics" not in data:
+            continue
+        ds_name = data["dataset"]
+        items = [
+            TrajectoryItem(**item) for item in data["items"]
+        ]
+        results[ds_name] = TrajectoryResult(
+            items=items,
+            accuracy=data["metrics"]["accuracy"],
+            precision=data["metrics"]["precision"],
+            recall=data["metrics"]["recall"],
+            f1=data["metrics"]["f1"],
+        )
+    return results
+
+
+def _load_onesided_from_disk(run_dir: Path, side: str) -> dict[str, OnesidedResult]:
+    """Load all onesided judge outputs for a side from disk."""
+    judge_dir = run_dir / "judge_outputs"
+    results = {}
+    if not judge_dir.exists():
+        return results
+    for path in judge_dir.glob(f"*_{side}.json"):
+        data = json.loads(path.read_text())
+        if "dimensions" not in data:
+            continue
+        ds_name = data["dataset"]
+        items = [
+            OnesidedItem(
+                query=item["query"],
+                response="",
+                scores=item["scores"],
+                explanation=item.get("explanation", ""),
+                context="",
+            )
+            for item in data["items"]
+        ]
+        results[ds_name] = OnesidedResult(
+            dataset_name=ds_name,
+            dimensions=data["dimensions"],
+            items=items,
+            mean_scores=data["mean_scores"],
+        )
+    return results
+
+
 def _build_trajectory_table(
     base_tr: TrajectoryResult,
     test_tr: Optional[TrajectoryResult] = None,
 ) -> str:
     if test_tr:
+
+        def _diff_pct(t, b):
+            d = t - b
+            return f"+{d:.0%}" if d >= 0 else f"{d:.0%}"
+
         lines = [
-            "| Metric | Base | Test |",
-            "|--------|------|------|",
-            f"| Accuracy  | {base_tr.accuracy:.0%} | {test_tr.accuracy:.0%} |",
-            f"| Precision | {base_tr.precision:.0%} | {test_tr.precision:.0%} |",
-            f"| Recall    | {base_tr.recall:.0%} | {test_tr.recall:.0%} |",
-            f"| F1        | {base_tr.f1:.0%} | {test_tr.f1:.0%} |",
+            "| Metric | Base | Test | Diff |",
+            "|--------|------|------|------|",
+            f"| Accuracy  | {base_tr.accuracy:.0%} | {test_tr.accuracy:.0%} | {_diff_pct(test_tr.accuracy, base_tr.accuracy)} |",
+            f"| Precision | {base_tr.precision:.0%} | {test_tr.precision:.0%} | {_diff_pct(test_tr.precision, base_tr.precision)} |",
+            f"| Recall    | {base_tr.recall:.0%} | {test_tr.recall:.0%} | {_diff_pct(test_tr.recall, base_tr.recall)} |",
+            f"| F1        | {base_tr.f1:.0%} | {test_tr.f1:.0%} | {_diff_pct(test_tr.f1, base_tr.f1)} |",
         ]
     else:
         lines = [
@@ -194,18 +253,20 @@ def _build_rubric_table(
         n = len(base_osr.items)
         lines = [f"### {ds_name}", "", f"n={n}", ""]
         if test_osr:
-            lines.append("| Dimension | Base | Test |")
-            lines.append("|-----------|------|------|")
+            lines.append("| Dimension | Base | Test | Diff |")
+            lines.append("|-----------|------|------|------|")
             for dim in base_osr.dimensions:
                 base_val = base_osr.mean_scores.get(dim, 0)
                 test_val = test_osr.mean_scores.get(dim, 0)
-                lines.append(f"| {dim} | {base_val:.2f} | {test_val:.2f} |")
+                diff = test_val - base_val
+                diff_str = f"+{diff:.1f}" if diff >= 0 else f"{diff:.1f}"
+                lines.append(f"| {dim} | {base_val:.1f} | {test_val:.1f} | {diff_str} |")
         else:
             lines.append("| Dimension | Mean |")
             lines.append("|-----------|------|")
             for dim in base_osr.dimensions:
                 val = base_osr.mean_scores.get(dim, 0)
-                lines.append(f"| {dim} | {val:.2f} |")
+                lines.append(f"| {dim} | {val:.1f} |")
         sections.append("\n".join(lines))
     return "\n\n".join(sections)
 
@@ -214,6 +275,7 @@ def run_eval(
     base_agent: str,
     test_agent: Optional[str] = None,
     verbose: bool = False,
+    run_id: Optional[str] = None,
 ) -> Path:
     """Run all evals defined in configs/evals.yaml.
 
@@ -221,6 +283,7 @@ def run_eval(
         base_agent: Agent config name for the base side.
         test_agent: Agent config name for the test side (optional).
         verbose: Print progress to stderr.
+        run_id: Existing run folder name to resume (e.g. '2026-02-22_14-30-00').
 
     Returns:
         Path to the generated run directory.
@@ -230,9 +293,16 @@ def run_eval(
     template = _load_template()
     has_test = test_agent is not None
 
-    # Create run directory
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    run_dir = PROJECT_ROOT / "eval_outputs" / timestamp
+    # Create or reuse run directory
+    if run_id:
+        run_dir = PROJECT_ROOT / "eval_outputs" / run_id
+        if not run_dir.exists():
+            raise FileNotFoundError(f"Run directory not found: {run_dir}")
+        if verbose:
+            print(f"Resuming run: {run_dir}", file=sys.stderr)
+    else:
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        run_dir = PROJECT_ROOT / "eval_outputs" / timestamp
     run_dir.mkdir(parents=True, exist_ok=True)
 
     base_trajectory: Optional[TrajectoryResult] = None
@@ -301,16 +371,25 @@ def run_eval(
         else:
             raise ValueError(f"Unknown rater type: {rater}")
 
+    # Load all results from disk (includes both current run and previous runs)
+    all_trajectory_base = _load_trajectory_from_disk(run_dir, "base")
+    all_trajectory_test = _load_trajectory_from_disk(run_dir, "test")
+    all_onesided_base = _load_onesided_from_disk(run_dir, "base")
+    all_onesided_test = _load_onesided_from_disk(run_dir, "test")
+
     # Build table strings and fill template
+    # Use the first trajectory result found (there should be at most one)
     trajectory_table = "N/A"
-    if base_trajectory:
-        trajectory_table = _build_trajectory_table(base_trajectory, test_trajectory)
+    if all_trajectory_base:
+        first_base_tr = next(iter(all_trajectory_base.values()))
+        first_test_tr = next(iter(all_trajectory_test.values())) if all_trajectory_test else None
+        trajectory_table = _build_trajectory_table(first_base_tr, first_test_tr)
 
     rubric_table = "N/A"
-    if onesided_base:
+    if all_onesided_base:
         rubric_table = _build_rubric_table(
-            onesided_base,
-            onesided_test if has_test else None,
+            all_onesided_base,
+            all_onesided_test if all_onesided_test else None,
         )
 
     report = template.format(

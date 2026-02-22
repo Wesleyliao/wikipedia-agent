@@ -1,28 +1,28 @@
-triggering:
-  path: eval_data/triggering.yaml
-  rater: trajectory
+# triggering:
+#   path: eval_data/triggering.yaml
+#   rater: trajectory
 
-direct:
-  path: eval_data/direct.yaml
-  rater: onesided
-  judge_model: claude-haiku-4-5-20251001
-  judge_max_tokens: 1024
-  dimensions:
-    correctness: |
-      Does the response match the ground truth?
-      - 3: Correct — core fact matches ground truth
-      - 2: Partially correct — related but imprecise or incomplete
-      - 1: Incorrect — wrong answer or irrelevant
-    tone_and_style: |
-      Is the tone appropriate for a research assistant?
-      - 3: Professional, neutral, well-structured
-      - 2: Acceptable but slightly informal, verbose preamble, or awkward phrasing
-      - 1: Inappropriate tone, overly casual, or robotic/unnatural
-    verbosity: |
-      Is the response an appropriate length for the question?
-      - 3: Concise — answers the question without unnecessary padding
-      - 2: Somewhat verbose — includes extra information that wasn't asked for
-      - 1: Excessively verbose or excessively terse
+# direct:
+#   path: eval_data/direct.yaml
+#   rater: onesided
+#   judge_model: claude-haiku-4-5-20251001
+#   judge_max_tokens: 1024
+#   dimensions:
+#     correctness: |
+#       Does the response match the ground truth?
+#       - 3: Correct — core fact matches ground truth
+#       - 2: Partially correct — related but imprecise or incomplete
+#       - 1: Incorrect — wrong answer or irrelevant
+#     tone_and_style: |
+#       Is the tone appropriate for a research assistant?
+#       - 3: Professional, neutral, well-structured
+#       - 2: Acceptable but slightly informal, verbose preamble, or awkward phrasing
+#       - 1: Inappropriate tone, overly casual, or robotic/unnatural
+#     verbosity: |
+#       Is the response an appropriate length for the question?
+#       - 3: Concise — answers the question without unnecessary padding
+#       - 2: Somewhat verbose — includes extra information that wasn't asked for
+#       - 1: Excessively verbose or excessively terse
 
 multistep:
   path: eval_data/multistep.yaml

@@ -8,6 +8,7 @@ import anthropic
 
 from src.config import AgentConfig, load_agent_config, load_system_instruction, load_tool_description
 from src.tools import TOOL_MAP, build_tool_definition
+from src.utils import create_with_retries
 
 
 @dataclass
@@ -60,7 +61,8 @@ def run_agent(
 
     turn_count = 0
     for turn_count in range(1, agent_config.max_turns + 1):
-        response = client.messages.create(
+        response = create_with_retries(
+            client,
             model=agent_config.model,
             max_tokens=agent_config.max_tokens,
             system=system_prompt,
