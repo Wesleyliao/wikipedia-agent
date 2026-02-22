@@ -2,17 +2,17 @@
 
 import json
 import sys
+import yaml
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-import yaml
-
 from src.agent import run_agent, AgentResult
 from src.config import PROJECT_ROOT, load_agent_config
 from src.eval.trajectory import evaluate_trajectory, TrajectoryResult
-from src.eval.onesided import evaluate_onesided, OnesidedResult
+from src.eval.onesided import evaluate_onesided, OnesidedResult, MAX_EVAL_CONCURRENCY
 
 
 def _load_eval_config() -> dict:
@@ -44,17 +44,25 @@ def _run_agent_on_dataset(
     agent_config_name: str,
     verbose: bool = False,
 ) -> list[tuple[dict, AgentResult]]:
-    """Run the agent on every item in a dataset."""
+    """Run the agent on every item in a dataset concurrently."""
     config = load_agent_config(agent_config_name)
-    results = []
-    for i, item in enumerate(dataset):
+
+    def _run_one(idx: int, item: dict) -> tuple[int, dict, AgentResult]:
         if verbose:
             print(
-                f"  [{i + 1}/{len(dataset)}] {item['query'][:60]}...",
+                f"  [{idx + 1}/{len(dataset)}] {item['query'][:60]}...",
                 file=sys.stderr,
             )
         result = run_agent(query=item["query"], agent_config=config)
-        results.append((item, result))
+        return idx, item, result
+
+    results = [None] * len(dataset)
+    with ThreadPoolExecutor(max_workers=MAX_EVAL_CONCURRENCY) as executor:
+        futures = {executor.submit(_run_one, i, item): i for i, item in enumerate(dataset)}
+        for future in as_completed(futures):
+            idx, item, result = future.result()
+            results[idx] = (item, result)
+
     return results
 
 
@@ -183,7 +191,8 @@ def _build_rubric_table(
     sections = []
     for ds_name, base_osr in onesided_base.items():
         test_osr = onesided_test.get(ds_name) if onesided_test else None
-        lines = [f"### {ds_name}", ""]
+        n = len(base_osr.items)
+        lines = [f"### {ds_name}", "", f"n={n}", ""]
         if test_osr:
             lines.append("| Dimension | Base | Test |")
             lines.append("|-----------|------|------|")

@@ -2,11 +2,14 @@
 
 import json
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 
 import anthropic
 
 from src.agent import AgentResult
+
+MAX_EVAL_CONCURRENCY = 2
 
 
 @dataclass
@@ -124,10 +127,9 @@ def evaluate_onesided(
         judge_max_tokens: Max tokens for judge response.
     """
     client = anthropic.Anthropic()
-    items = []
     dim_names = list(dimensions.keys())
 
-    for dataset_item, result in agent_results:
+    def _judge_item(idx: int, dataset_item: dict, result: AgentResult) -> tuple[int, OnesidedItem]:
         context = _build_context(dataset_item)
         scores, explanation = judge_onesided(
             query=dataset_item["query"],
@@ -139,13 +141,24 @@ def evaluate_onesided(
             judge_model=judge_model,
             judge_max_tokens=judge_max_tokens,
         )
-        items.append(OnesidedItem(
+        return idx, OnesidedItem(
             query=dataset_item["query"],
             response=result.final_text,
             scores=scores,
             explanation=explanation,
             context=context,
-        ))
+        )
+
+    # Run judge calls concurrently
+    items = [None] * len(agent_results)
+    with ThreadPoolExecutor(max_workers=MAX_EVAL_CONCURRENCY) as executor:
+        futures = {
+            executor.submit(_judge_item, i, dataset_item, result): i
+            for i, (dataset_item, result) in enumerate(agent_results)
+        }
+        for future in as_completed(futures):
+            idx, item = future.result()
+            items[idx] = item
 
     # Compute per-dimension means
     mean_scores = {}

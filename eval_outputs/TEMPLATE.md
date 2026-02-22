@@ -10,6 +10,8 @@
 
 {trajectory_table}
 
-## Rubric Scores
+## Rubric Evaluations
+
+Ratings are on a scale of 1 to 3, where 3 is the best.
 
 {rubric_table}
