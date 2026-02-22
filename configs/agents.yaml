@@ -1,6 +1,13 @@
-default:
+agent_v1:
   model: claude-haiku-4-5-20251001
   max_tokens: 4096
   max_turns: 10
-  system_instruction: default
-  tool_description: default
+  system_instruction: system_instruction_v1
+  tool_description: tool_description_v1
+
+agent_v0:
+  model: claude-haiku-4-5-20251001
+  max_tokens: 4096
+  max_turns: 10
+  system_instruction: system_instruction_v0
+  tool_description: tool_description_v0

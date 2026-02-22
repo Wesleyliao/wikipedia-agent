@@ -1,5 +1,6 @@
-"""One-sided rubric autorater using LLM-as-judge."""
+"""One-sided rubric autorater using LLM-as-judge with multi-dimension scoring."""
 
+import json
 import re
 from dataclasses import dataclass, field
 
@@ -12,7 +13,7 @@ from src.agent import AgentResult
 class OnesidedItem:
     query: str
     response: str
-    score: int
+    scores: dict[str, int]
     explanation: str
     context: str
 
@@ -20,9 +21,9 @@ class OnesidedItem:
 @dataclass
 class OnesidedResult:
     dataset_name: str
+    dimensions: list[str] = field(default_factory=list)
     items: list[OnesidedItem] = field(default_factory=list)
-    mean_score: float = 0.0
-    score_distribution: dict[int, int] = field(default_factory=dict)
+    mean_scores: dict[str, float] = field(default_factory=dict)
 
 
 def _build_context(dataset_item: dict) -> str:
@@ -37,74 +38,102 @@ def _build_context(dataset_item: dict) -> str:
     return "\n".join(parts) if parts else "No additional context."
 
 
-def _parse_score(judge_response: str) -> tuple[int, str]:
-    """Extract score and explanation from judge response.
+def _format_dimensions(dimensions: dict[str, str]) -> str:
+    """Format dimension rubrics for the judge prompt."""
+    parts = []
+    for name, rubric in dimensions.items():
+        parts.append(f"### {name}\n{rubric.strip()}")
+    return "\n\n".join(parts)
 
-    Expects a line matching 'Score: N' near the end.
+
+def _format_score_keys(dimensions: dict[str, str]) -> str:
+    """Build the JSON keys hint for the prompt, e.g. '"correctness": N, "tone_and_style": N'."""
+    return ", ".join(f'"{name}": N' for name in dimensions)
+
+
+def _parse_scores(
+    judge_response: str,
+    dimensions: dict[str, str],
+) -> tuple[dict[str, int], str]:
+    """Parse multi-dimension scores from judge JSON response.
+
+    Returns (scores_dict, explanation).
     """
-    lines = judge_response.strip().split("\n")
-    for i in range(len(lines) - 1, -1, -1):
-        match = re.match(r"Score:\s*(\d)", lines[i].strip())
+    # Try to extract JSON from the response
+    try:
+        # Find JSON object in response
+        match = re.search(r"\{.*\}", judge_response, re.DOTALL)
         if match:
-            score = max(1, min(5, int(match.group(1))))
-            explanation = "\n".join(lines[:i]).strip()
-            return score, explanation
-    return 3, f"[PARSE ERROR] {judge_response}"
+            data = json.loads(match.group())
+            raw_scores = data.get("scores", {})
+            explanation = data.get("explanation", "")
+            scores = {}
+            for dim in dimensions:
+                val = raw_scores.get(dim, 2)
+                scores[dim] = max(1, min(3, int(val)))
+            return scores, explanation
+    except (json.JSONDecodeError, ValueError, TypeError):
+        pass
+
+    # Fallback: default scores
+    return {dim: 2 for dim in dimensions}, f"[PARSE ERROR] {judge_response}"
 
 
 def judge_onesided(
     query: str,
     response: str,
     context: str,
-    rubric: str,
+    dimensions: dict[str, str],
     prompt_template: str,
     client: anthropic.Anthropic,
     judge_model: str,
     judge_max_tokens: int,
-) -> tuple[int, str]:
-    """Make a single judge LLM call. Returns (score, explanation)."""
+) -> tuple[dict[str, int], str]:
+    """Make a single judge LLM call. Returns (scores_dict, explanation)."""
     prompt = prompt_template.format(
-        rubric=rubric,
+        dimensions=_format_dimensions(dimensions),
         query=query,
         context=context,
         response=response,
+        score_keys=_format_score_keys(dimensions),
     )
     judge_response = client.messages.create(
         model=judge_model,
         max_tokens=judge_max_tokens,
         messages=[{"role": "user", "content": prompt}],
     )
-    return _parse_score(judge_response.content[0].text)
+    return _parse_scores(judge_response.content[0].text, dimensions)
 
 
 def evaluate_onesided(
     dataset_name: str,
     agent_results: list[tuple[dict, AgentResult]],
-    rubric: str,
+    dimensions: dict[str, str],
     prompt_template: str,
     judge_model: str,
     judge_max_tokens: int,
 ) -> OnesidedResult:
-    """Evaluate a dataset using one-sided LLM-as-judge.
+    """Evaluate a dataset using one-sided LLM-as-judge with multiple dimensions.
 
     Args:
         dataset_name: Name of the dataset (for the report).
         agent_results: List of (dataset_item, AgentResult) pairs.
-        rubric: The rubric text for this dataset.
+        dimensions: Dict mapping dimension name to rubric text.
         prompt_template: The onesided template from prompts/evals.yaml.
         judge_model: Model ID for the judge.
         judge_max_tokens: Max tokens for judge response.
     """
     client = anthropic.Anthropic()
     items = []
+    dim_names = list(dimensions.keys())
 
     for dataset_item, result in agent_results:
         context = _build_context(dataset_item)
-        score, explanation = judge_onesided(
+        scores, explanation = judge_onesided(
             query=dataset_item["query"],
             response=result.final_text,
             context=context,
-            rubric=rubric,
+            dimensions=dimensions,
             prompt_template=prompt_template,
             client=client,
             judge_model=judge_model,
@@ -113,18 +142,20 @@ def evaluate_onesided(
         items.append(OnesidedItem(
             query=dataset_item["query"],
             response=result.final_text,
-            score=score,
+            scores=scores,
             explanation=explanation,
             context=context,
         ))
 
-    scores = [item.score for item in items]
-    mean_score = sum(scores) / len(scores) if scores else 0.0
-    distribution = {s: scores.count(s) for s in range(1, 6)}
+    # Compute per-dimension means
+    mean_scores = {}
+    for dim in dim_names:
+        vals = [item.scores[dim] for item in items]
+        mean_scores[dim] = sum(vals) / len(vals) if vals else 0.0
 
     return OnesidedResult(
         dataset_name=dataset_name,
+        dimensions=dim_names,
         items=items,
-        mean_score=mean_score,
-        score_distribution=distribution,
+        mean_scores=mean_scores,
     )

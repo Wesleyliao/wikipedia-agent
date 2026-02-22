@@ -15,12 +15,14 @@ def cli():
 @cli.command()
 @click.argument("query")
 @click.option(
-    "--config", "config_name",
-    default="default",
+    "--config",
+    "config_name",
+    default="v1",
     help="Agent config name (top-level key in configs/agents.yaml).",
 )
 @click.option(
-    "--verbose", "-v",
+    "--verbose",
+    "-v",
     is_flag=True,
     help="Print tool calls to stderr.",
 )
@@ -30,7 +32,7 @@ def ask(query, config_name, verbose):
     \b
     Examples:
         python -m src.cli ask "What is the capital of France?"
-        python -m src.cli ask "Explain quantum entanglement" --config fast -v
+        python -m src.cli ask "Explain quantum entanglement" --config agent_v1 -v
     """
     agent_config = load_agent_config(config_name)
 
@@ -51,7 +53,8 @@ def ask(query, config_name, verbose):
     help="Test agent config name for side-by-side comparison.",
 )
 @click.option(
-    "--verbose", "-v",
+    "--verbose",
+    "-v",
     is_flag=True,
     help="Print progress to stderr.",
 )
@@ -63,8 +66,8 @@ def evals(base, test, verbose):
 
     \b
     Examples:
-        python -m src.cli evals default
-        python -m src.cli evals default --test fast -v
+        python -m src.cli evals agent_v1
+        python -m src.cli evals agent_v0 --test agent_v1 -v
     """
     from src.eval.runner import run_eval
 

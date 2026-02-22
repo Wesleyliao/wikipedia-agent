@@ -26,6 +26,12 @@ def _load_judge_prompts() -> dict[str, str]:
         return yaml.safe_load(f) or {}
 
 
+def _load_template() -> str:
+    path = PROJECT_ROOT / "eval_outputs" / "TEMPLATE.md"
+    with open(path) as f:
+        return f.read()
+
+
 def _load_dataset(path_str: str) -> list[dict]:
     path = PROJECT_ROOT / path_str
     with open(path) as f:
@@ -84,87 +90,54 @@ def _serialize_messages(messages: list) -> list:
     return serialized
 
 
-def _render_report(
-    base_agent: str,
-    test_agent: Optional[str],
-    trajectory_results: dict[str, TrajectoryResult],
-    onesided_base: dict[str, OnesidedResult],
-    onesided_test: dict[str, OnesidedResult],
+def _build_trajectory_table(
+    base_tr: TrajectoryResult,
+    test_tr: Optional[TrajectoryResult] = None,
 ) -> str:
-    """Render the summary markdown report."""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    has_test = test_agent is not None
-
-    lines = [
-        "# Eval Report",
-        f"**Generated:** {timestamp}",
-        f"**Base agent:** `{base_agent}`",
-    ]
-    if has_test:
-        lines.append(f"**Test agent:** `{test_agent}`")
-    lines.append("")
-
-    # --- Trajectory section ---
-    if trajectory_results:
-        lines.append("## Trajectory (Tool Triggering)")
-        lines.append("")
-        if has_test:
-            base_tr = trajectory_results.get("triggering_base")
-            test_tr = trajectory_results.get("triggering_test")
-            if base_tr and test_tr:
-                lines.append("| Metric | Base | Test |")
-                lines.append("|--------|------|------|")
-                lines.append(f"| Accuracy  | {base_tr.accuracy:.2%} | {test_tr.accuracy:.2%} |")
-                lines.append(f"| Precision | {base_tr.precision:.2%} | {test_tr.precision:.2%} |")
-                lines.append(f"| Recall    | {base_tr.recall:.2%} | {test_tr.recall:.2%} |")
-                lines.append(f"| F1        | {base_tr.f1:.2%} | {test_tr.f1:.2%} |")
-        else:
-            for name, tr in trajectory_results.items():
-                lines.append("| Metric    | Value  |")
-                lines.append("|-----------|--------|")
-                lines.append(f"| Accuracy  | {tr.accuracy:.2%} |")
-                lines.append(f"| Precision | {tr.precision:.2%} |")
-                lines.append(f"| Recall    | {tr.recall:.2%} |")
-                lines.append(f"| F1        | {tr.f1:.2%} |")
-        lines.append("")
-
-    # --- Rubric scores section ---
-    if onesided_base:
-        lines.append("## Rubric Scores")
-        lines.append("")
-
-        if has_test and onesided_test:
-            lines.append("| Dataset | Base Mean | Test Mean | Base Distribution (1-5) | Test Distribution (1-5) |")
-            lines.append("|---------|-----------|-----------|-------------------------|-------------------------|")
-            for ds_name, base_osr in onesided_base.items():
-                test_osr = onesided_test.get(ds_name)
-                bd = base_osr.score_distribution
-                base_dist = f"{bd.get(1,0)}/{bd.get(2,0)}/{bd.get(3,0)}/{bd.get(4,0)}/{bd.get(5,0)}"
-                if test_osr:
-                    td = test_osr.score_distribution
-                    test_dist = f"{td.get(1,0)}/{td.get(2,0)}/{td.get(3,0)}/{td.get(4,0)}/{td.get(5,0)}"
-                    lines.append(
-                        f"| {ds_name} | {base_osr.mean_score:.2f} | "
-                        f"{test_osr.mean_score:.2f} | {base_dist} | {test_dist} |"
-                    )
-                else:
-                    lines.append(
-                        f"| {ds_name} | {base_osr.mean_score:.2f} | "
-                        f"N/A | {base_dist} | N/A |"
-                    )
-        else:
-            lines.append("| Dataset | Mean Score | 1 | 2 | 3 | 4 | 5 |")
-            lines.append("|---------|-----------|---|---|---|---|---|")
-            for ds_name, osr in onesided_base.items():
-                d = osr.score_distribution
-                lines.append(
-                    f"| {ds_name} | {osr.mean_score:.2f} | "
-                    f"{d.get(1,0)} | {d.get(2,0)} | {d.get(3,0)} | "
-                    f"{d.get(4,0)} | {d.get(5,0)} |"
-                )
-        lines.append("")
-
+    if test_tr:
+        lines = [
+            "| Metric | Base | Test |",
+            "|--------|------|------|",
+            f"| Accuracy  | {base_tr.accuracy:.2%} | {test_tr.accuracy:.2%} |",
+            f"| Precision | {base_tr.precision:.2%} | {test_tr.precision:.2%} |",
+            f"| Recall    | {base_tr.recall:.2%} | {test_tr.recall:.2%} |",
+            f"| F1        | {base_tr.f1:.2%} | {test_tr.f1:.2%} |",
+        ]
+    else:
+        lines = [
+            "| Metric    | Value  |",
+            "|-----------|--------|",
+            f"| Accuracy  | {base_tr.accuracy:.2%} |",
+            f"| Precision | {base_tr.precision:.2%} |",
+            f"| Recall    | {base_tr.recall:.2%} |",
+            f"| F1        | {base_tr.f1:.2%} |",
+        ]
     return "\n".join(lines)
+
+
+def _build_rubric_table(
+    onesided_base: dict[str, OnesidedResult],
+    onesided_test: Optional[dict[str, OnesidedResult]] = None,
+) -> str:
+    sections = []
+    for ds_name, base_osr in onesided_base.items():
+        test_osr = onesided_test.get(ds_name) if onesided_test else None
+        lines = [f"### {ds_name}", ""]
+        if test_osr:
+            lines.append("| Dimension | Base | Test |")
+            lines.append("|-----------|------|------|")
+            for dim in base_osr.dimensions:
+                base_val = base_osr.mean_scores.get(dim, 0)
+                test_val = test_osr.mean_scores.get(dim, 0)
+                lines.append(f"| {dim} | {base_val:.2f} | {test_val:.2f} |")
+        else:
+            lines.append("| Dimension | Mean |")
+            lines.append("|-----------|------|")
+            for dim in base_osr.dimensions:
+                val = base_osr.mean_scores.get(dim, 0)
+                lines.append(f"| {dim} | {val:.2f} |")
+        sections.append("\n".join(lines))
+    return "\n\n".join(sections)
 
 
 def run_eval(
@@ -184,6 +157,7 @@ def run_eval(
     """
     config = _load_eval_config()
     judge_prompts = _load_judge_prompts()
+    template = _load_template()
     has_test = test_agent is not None
 
     # Create run directory
@@ -191,7 +165,8 @@ def run_eval(
     run_dir = PROJECT_ROOT / "eval_outputs" / timestamp
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    trajectory_results: dict[str, TrajectoryResult] = {}
+    base_trajectory: Optional[TrajectoryResult] = None
+    test_trajectory: Optional[TrajectoryResult] = None
     onesided_base: dict[str, OnesidedResult] = {}
     onesided_test: dict[str, OnesidedResult] = {}
 
@@ -217,22 +192,21 @@ def run_eval(
             _dump_transcripts(run_dir, "test", ds_name, results_test)
 
         if rater == "trajectory":
+            base_trajectory = evaluate_trajectory(results_base)
             if has_test and results_test:
-                trajectory_results["triggering_base"] = evaluate_trajectory(results_base)
-                trajectory_results["triggering_test"] = evaluate_trajectory(results_test)
-            else:
-                trajectory_results[ds_name] = evaluate_trajectory(results_base)
+                test_trajectory = evaluate_trajectory(results_test)
 
         elif rater == "onesided":
             judge_model = ds_config.get("judge_model", "claude-haiku-4-5-20251001")
             judge_max_tokens = ds_config.get("judge_max_tokens", 1024)
+            dimensions = ds_config["dimensions"]
 
             if verbose:
                 print(f"Judging base results for {ds_name}...", file=sys.stderr)
             onesided_base[ds_name] = evaluate_onesided(
                 dataset_name=ds_name,
                 agent_results=results_base,
-                rubric=ds_config["rubric"],
+                dimensions=dimensions,
                 prompt_template=judge_prompts["onesided"],
                 judge_model=judge_model,
                 judge_max_tokens=judge_max_tokens,
@@ -243,7 +217,7 @@ def run_eval(
                 onesided_test[ds_name] = evaluate_onesided(
                     dataset_name=ds_name,
                     agent_results=results_test,
-                    rubric=ds_config["rubric"],
+                    dimensions=dimensions,
                     prompt_template=judge_prompts["onesided"],
                     judge_model=judge_model,
                     judge_max_tokens=judge_max_tokens,
@@ -252,10 +226,25 @@ def run_eval(
         else:
             raise ValueError(f"Unknown rater type: {rater}")
 
-    # Write report
-    report = _render_report(
-        base_agent, test_agent, trajectory_results, onesided_base, onesided_test,
+    # Build table strings and fill template
+    trajectory_table = "N/A"
+    if base_trajectory:
+        trajectory_table = _build_trajectory_table(base_trajectory, test_trajectory)
+
+    rubric_table = "N/A"
+    if onesided_base:
+        rubric_table = _build_rubric_table(
+            onesided_base, onesided_test if has_test else None,
+        )
+
+    report = template.format(
+        timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        base_agent=base_agent,
+        test_agent_line=f"**Test agent:** `{test_agent}`" if has_test else "",
+        trajectory_table=trajectory_table,
+        rubric_table=rubric_table,
     )
+
     report_path = run_dir / "report.md"
     report_path.write_text(report)
 

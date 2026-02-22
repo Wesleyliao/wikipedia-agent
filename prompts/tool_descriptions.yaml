@@ -1,4 +1,20 @@
-default:
+tool_description_v1:
+  search_wikipedia: >-
+    Searches Wikipedia and returns the title and introductory 
+    content of the closest matching article. Use this tool to 
+    retrieve comprehensive, factual, and up-to-date information 
+    on specific entities, historical events, or concepts to 
+    ground your answers. 
+    
+    If the user's question is complex and 
+    requires multi-step reasoning, decompose the question and use 
+    this tool sequentially to gather facts one by one. Standard 
+    Wikipedia search relies on keywords. Pass broad entities and 
+    nouns into the `query` string, NOT full conversational questions 
+    (e.g., use `Alexander Graham Bell birthplace` instead of `Where 
+    was Alexander Graham Bell born?`).
+
+tool_description_v0:
   search_wikipedia: >-
     Search Wikipedia for a query and return article summaries.
     Use this to look up factual information about people, places,

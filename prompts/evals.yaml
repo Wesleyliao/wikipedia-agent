@@ -1,19 +1,39 @@
 onesided: |
-  You are an evaluation judge. Score the AI agent's response to the user's query.
+  <role_and_task>
+  You are an expert impartial judge evaluating the quality of an AI agent's response to a specific query. 
+  You will be provided with the user's query, the agent's response, and additional context. 
+  Your task is to provide objective scores based on the rubric provided.
+  </role_and_task>
 
-  ## Rubric
-  {rubric}
-
-  ## Query
+  <evaluation_data>
+  <query>
   {query}
+  </query>
 
-  ## Additional Context
+  <context>
   {context}
+  </context>
 
-  ## Agent Response
+  <agent_response>
   {response}
+  </agent_response>
+  </evaluation_data>
 
-  ## Instructions
-  First, write a brief explanation (2-3 sentences) of your reasoning.
-  Then, on the LAST line, write exactly: Score: N
-  where N is an integer from 1 to 5.
+  <scoring_rubric>
+  {dimensions}
+  </scoring_rubric>
+
+  <output_instructions>
+  Evaluate the agent's performance strictly against the rubric above. 
+  Respond ONLY with a JSON object following this schema:
+  {{
+    "scores": {{
+      "accuracy": int,
+      "tool_efficiency": int,
+      "conciseness": int
+    }},
+    "reasoning": "A brief 1-2 sentence justification for the scores provided."
+  }}
+  
+  Do not include any additional text outside of the JSON object.
+  </output_instructions>
