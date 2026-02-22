@@ -17,7 +17,7 @@ def cli():
 @click.option(
     "--config",
     "config_name",
-    default="v1",
+    default="agent_v1",
     help="Agent config name (top-level key in configs/agents.yaml).",
 )
 @click.option(

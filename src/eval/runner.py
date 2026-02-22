@@ -80,14 +80,16 @@ def _dump_transcripts(
     transcript_dir.mkdir(exist_ok=True)
     records = []
     for dataset_item, result in agent_results:
-        records.append({
-            "query": dataset_item["query"],
-            "dataset_item": dataset_item,
-            "final_text": result.final_text,
-            "turn_count": result.turn_count,
-            "tool_calls_made": result.tool_calls_made,
-            "messages": _serialize_messages(result.messages),
-        })
+        records.append(
+            {
+                "query": dataset_item["query"],
+                "dataset_item": dataset_item,
+                "final_text": result.final_text,
+                "turn_count": result.turn_count,
+                "tool_calls_made": result.tool_calls_made,
+                "messages": _serialize_messages(result.messages),
+            }
+        )
     path = transcript_dir / f"{dataset_name}.json"
     path.write_text(json.dumps(records, indent=2, default=str))
 
@@ -157,19 +159,19 @@ def _build_trajectory_table(
         lines = [
             "| Metric | Base | Test |",
             "|--------|------|------|",
-            f"| Accuracy  | {base_tr.accuracy:.2%} | {test_tr.accuracy:.2%} |",
-            f"| Precision | {base_tr.precision:.2%} | {test_tr.precision:.2%} |",
-            f"| Recall    | {base_tr.recall:.2%} | {test_tr.recall:.2%} |",
-            f"| F1        | {base_tr.f1:.2%} | {test_tr.f1:.2%} |",
+            f"| Accuracy  | {base_tr.accuracy:.0%} | {test_tr.accuracy:.0%} |",
+            f"| Precision | {base_tr.precision:.0%} | {test_tr.precision:.0%} |",
+            f"| Recall    | {base_tr.recall:.0%} | {test_tr.recall:.0%} |",
+            f"| F1        | {base_tr.f1:.0%} | {test_tr.f1:.0%} |",
         ]
     else:
         lines = [
             "| Metric    | Value  |",
             "|-----------|--------|",
-            f"| Accuracy  | {base_tr.accuracy:.2%} |",
-            f"| Precision | {base_tr.precision:.2%} |",
-            f"| Recall    | {base_tr.recall:.2%} |",
-            f"| F1        | {base_tr.f1:.2%} |",
+            f"| Accuracy  | {base_tr.accuracy:.0%} |",
+            f"| Precision | {base_tr.precision:.0%} |",
+            f"| Recall    | {base_tr.recall:.0%} |",
+            f"| F1        | {base_tr.f1:.0%} |",
         ]
     return "\n".join(lines)
 
@@ -298,7 +300,8 @@ def run_eval(
     rubric_table = "N/A"
     if onesided_base:
         rubric_table = _build_rubric_table(
-            onesided_base, onesided_test if has_test else None,
+            onesided_base,
+            onesided_test if has_test else None,
         )
 
     report = template.format(
