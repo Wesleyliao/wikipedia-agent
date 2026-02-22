@@ -66,7 +66,7 @@ def _parse_scores(
         if match:
             data = json.loads(match.group())
             raw_scores = data.get("scores", {})
-            explanation = data.get("explanation", "")
+            explanation = data.get("reasoning", data.get("explanation", ""))
             scores = {}
             for dim in dimensions:
                 val = raw_scores.get(dim, 2)

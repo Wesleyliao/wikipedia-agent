@@ -2,6 +2,7 @@
 
 import json
 import sys
+from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -57,28 +58,6 @@ def _run_agent_on_dataset(
     return results
 
 
-def _dump_transcripts(
-    run_dir: Path,
-    side: str,
-    dataset_name: str,
-    agent_results: list[tuple[dict, AgentResult]],
-) -> None:
-    """Dump raw agent transcripts as JSON files."""
-    transcript_dir = run_dir / f"transcripts_{side}"
-    transcript_dir.mkdir(exist_ok=True)
-    for i, (dataset_item, result) in enumerate(agent_results):
-        record = {
-            "query": dataset_item["query"],
-            "dataset_item": dataset_item,
-            "final_text": result.final_text,
-            "turn_count": result.turn_count,
-            "tool_calls_made": result.tool_calls_made,
-            "messages": _serialize_messages(result.messages),
-        }
-        path = transcript_dir / f"{dataset_name}_{i + 1:03d}.json"
-        path.write_text(json.dumps(record, indent=2, default=str))
-
-
 def _serialize_messages(messages: list) -> list:
     """Convert message list to JSON-safe format."""
     serialized = []
@@ -88,6 +67,86 @@ def _serialize_messages(messages: list) -> list:
         else:
             serialized.append(str(msg))
     return serialized
+
+
+def _dump_transcripts(
+    run_dir: Path,
+    side: str,
+    dataset_name: str,
+    agent_results: list[tuple[dict, AgentResult]],
+) -> None:
+    """Dump all agent transcripts for a dataset into a single JSON file."""
+    transcript_dir = run_dir / f"transcripts_{side}"
+    transcript_dir.mkdir(exist_ok=True)
+    records = []
+    for dataset_item, result in agent_results:
+        records.append({
+            "query": dataset_item["query"],
+            "dataset_item": dataset_item,
+            "final_text": result.final_text,
+            "turn_count": result.turn_count,
+            "tool_calls_made": result.tool_calls_made,
+            "messages": _serialize_messages(result.messages),
+        })
+    path = transcript_dir / f"{dataset_name}.json"
+    path.write_text(json.dumps(records, indent=2, default=str))
+
+
+def _dump_trajectory_judge(
+    run_dir: Path,
+    dataset_name: str,
+    side: str,
+    result: TrajectoryResult,
+) -> None:
+    """Dump trajectory judge output."""
+    judge_dir = run_dir / "judge_outputs"
+    judge_dir.mkdir(exist_ok=True)
+    output = {
+        "dataset": dataset_name,
+        "side": side,
+        "metrics": {
+            "accuracy": result.accuracy,
+            "precision": result.precision,
+            "recall": result.recall,
+            "f1": result.f1,
+        },
+        "items": [asdict(item) for item in result.items],
+    }
+    filename = f"{dataset_name}_{side}.json" if side != "base" else f"{dataset_name}.json"
+    path = judge_dir / filename
+    # If base already written and we're writing test, use _test suffix
+    if side == "base":
+        path = judge_dir / f"{dataset_name}_base.json"
+    else:
+        path = judge_dir / f"{dataset_name}_test.json"
+    path.write_text(json.dumps(output, indent=2, default=str))
+
+
+def _dump_onesided_judge(
+    run_dir: Path,
+    dataset_name: str,
+    side: str,
+    result: OnesidedResult,
+) -> None:
+    """Dump onesided judge output."""
+    judge_dir = run_dir / "judge_outputs"
+    judge_dir.mkdir(exist_ok=True)
+    output = {
+        "dataset": dataset_name,
+        "side": side,
+        "dimensions": result.dimensions,
+        "mean_scores": result.mean_scores,
+        "items": [
+            {
+                "query": item.query,
+                "scores": item.scores,
+                "explanation": item.explanation,
+            }
+            for item in result.items
+        ],
+    }
+    path = judge_dir / f"{dataset_name}_{side}.json"
+    path.write_text(json.dumps(output, indent=2, default=str))
 
 
 def _build_trajectory_table(
@@ -193,8 +252,10 @@ def run_eval(
 
         if rater == "trajectory":
             base_trajectory = evaluate_trajectory(results_base)
+            _dump_trajectory_judge(run_dir, ds_name, "base", base_trajectory)
             if has_test and results_test:
                 test_trajectory = evaluate_trajectory(results_test)
+                _dump_trajectory_judge(run_dir, ds_name, "test", test_trajectory)
 
         elif rater == "onesided":
             judge_model = ds_config.get("judge_model", "claude-haiku-4-5-20251001")
@@ -211,6 +272,8 @@ def run_eval(
                 judge_model=judge_model,
                 judge_max_tokens=judge_max_tokens,
             )
+            _dump_onesided_judge(run_dir, ds_name, "base", onesided_base[ds_name])
+
             if has_test and results_test:
                 if verbose:
                     print(f"Judging test results for {ds_name}...", file=sys.stderr)
@@ -222,6 +285,7 @@ def run_eval(
                     judge_model=judge_model,
                     judge_max_tokens=judge_max_tokens,
                 )
+                _dump_onesided_judge(run_dir, ds_name, "test", onesided_test[ds_name])
 
         else:
             raise ValueError(f"Unknown rater type: {rater}")
