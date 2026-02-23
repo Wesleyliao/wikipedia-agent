@@ -170,9 +170,7 @@ def _load_trajectory_from_disk(run_dir: Path, side: str) -> dict[str, Trajectory
         if "metrics" not in data:
             continue
         ds_name = data["dataset"]
-        items = [
-            TrajectoryItem(**item) for item in data["items"]
-        ]
+        items = [TrajectoryItem(**item) for item in data["items"]]
         results[ds_name] = TrajectoryResult(
             items=items,
             accuracy=data["metrics"]["accuracy"],
@@ -217,6 +215,7 @@ def _build_trajectory_table(
     base_tr: TrajectoryResult,
     test_tr: Optional[TrajectoryResult] = None,
 ) -> str:
+    n = len(base_tr.items)
     if test_tr:
 
         def _diff_pct(t, b):
@@ -224,6 +223,8 @@ def _build_trajectory_table(
             return f"+{d:.0%}" if d >= 0 else f"{d:.0%}"
 
         lines = [
+            f"n={n}",
+            "",
             "| Metric | Base | Test | Diff |",
             "|--------|------|------|------|",
             f"| Accuracy  | {base_tr.accuracy:.0%} | {test_tr.accuracy:.0%} | {_diff_pct(test_tr.accuracy, base_tr.accuracy)} |",
@@ -233,6 +234,8 @@ def _build_trajectory_table(
         ]
     else:
         lines = [
+            f"n={n}",
+            "",
             "| Metric    | Value  |",
             "|-----------|--------|",
             f"| Accuracy  | {base_tr.accuracy:.0%} |",
