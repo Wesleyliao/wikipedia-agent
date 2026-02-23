@@ -1,3 +1,21 @@
+tool_description_v2:
+  search_wikipedia: >-
+    Searches Wikipedia and returns the title and introductory
+    content of the closest matching article. Use this tool to
+    ground your answers for ANY query about a real-world topic:
+    people, places, events, scientific concepts, literary works,
+    historical periods, organizations, or terminology. Call this
+    tool even when you believe you already know the answer —
+    it provides grounding and citations, not just gap-filling.
+
+    If the user's question is complex and requires multi-step
+    reasoning, decompose the question and use this tool
+    sequentially to gather facts one by one. Standard Wikipedia
+    search relies on keywords. Pass broad entities and nouns into
+    the `query` string, NOT full conversational questions
+    (e.g., use `Alexander Graham Bell birthplace` instead of
+    `Where was Alexander Graham Bell born?`).
+
 tool_description_v1:
   search_wikipedia: >-
     Searches Wikipedia and returns the title and introductory 
