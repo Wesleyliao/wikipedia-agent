@@ -1,3 +1,10 @@
+agent_v3:
+  model: claude-haiku-4-5-20251001
+  max_tokens: 4096
+  max_turns: 10
+  system_instruction: system_instruction_v3
+  tool_description: tool_description_v2
+
 agent_v2:
   model: claude-haiku-4-5-20251001
   max_tokens: 4096
