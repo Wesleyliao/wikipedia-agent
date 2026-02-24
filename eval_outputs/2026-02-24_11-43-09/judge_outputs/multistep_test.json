@@ -1,0 +1,196 @@
+{
+  "dataset": "multistep",
+  "side": "test",
+  "dimensions": [
+    "correctness",
+    "tone_and_style",
+    "verbosity"
+  ],
+  "mean_scores": {
+    "correctness": 2.7,
+    "tone_and_style": 3.0,
+    "verbosity": 2.6
+  },
+  "items": [
+    {
+      "query": "Who was president of the United States when the Berlin Wall fell, and what political party were they in?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies both George H. W. Bush as president and the Republican Party as his affiliation, with the added factual detail of the date (November 9, 1989). The tone is professional and neutral with appropriate citations, and the length is concise without unnecessary padding."
+    },
+    {
+      "query": "What element has the highest melting point, and who discovered it?",
+      "scores": {
+        "correctness": 2,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies tungsten and its melting point, but fails to address the discoverer's names (Juan Jos\u00e9 Elhuyar and Fausto Elhuyar), only providing the year of identification. The tone is professional and well-structured, and the response is appropriately concise for the question asked."
+    },
+    {
+      "query": "Which country hosted the first modern Olympics, and who was the founder of the modern Olympic movement?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly answers both parts of the multi-part question with accurate details (Greece/Athens 1896 and Pierre de Coubertin), uses a professional and well-structured tone appropriate for a research assistant, and provides concise yet comprehensive information without unnecessary padding or tangential details."
+    },
+    {
+      "query": "What is the largest moon of Saturn, and what is notable about its atmosphere?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Titan as Saturn's largest moon and provides comprehensive, accurate information about its notable atmospheric features (density, nitrogen-rich composition, methane clouds, and surface liquids), fully addressing both parts of the query. While the tone is professional and well-structured, the response includes somewhat tangential details (e.g., comparison to Ganymede, Triton reference, surface pressure exact values) that, while interesting, extend beyond what the question specifically asks for."
+    },
+    {
+      "query": "Who wrote Don Quixote, and what language was it originally written in?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies both Miguel de Cervantes as the author and Spanish as the original language, with a professional and well-structured tone. However, the additional details about publication dates and literary significance, while accurate and interesting, go slightly beyond what the straightforward factual question requires."
+    },
+    {
+      "query": "What river flows through Baghdad, and what ancient civilization originated in its valley?",
+      "scores": {
+        "correctness": 2,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies the Tigris River but provides 'Mesopotamia' as the civilization rather than the more precise answer of 'Mesopotamian civilization'\u2014a minor semantic distinction that technically answers the question but with less specificity than the ground truth. The tone is professional and well-structured, and the response is appropriately concise without unnecessary padding."
+    },
+    {
+      "query": "Who invented the telephone, and what company did he found?",
+      "scores": {
+        "correctness": 2,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies Alexander Graham Bell as the telephone inventor, but partially errs on the company question\u2014while he did co-found AT&T in 1885, the ground truth specifies the Bell Telephone Company, which was the original company he founded (AT&T acquired it later). The tone is professional and neutral, and the response is appropriately concise without unnecessary elaboration."
+    },
+    {
+      "query": "What is the deepest point in the ocean, and in which ocean is it located?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies both the deepest point (Challenger Deep) and its location (Pacific Ocean/Mariana Trench), addressing all parts of the multi-part question. The tone is professional and neutral with appropriate structure, and the length is well-calibrated\u2014it provides the core answer concisely while adding relevant contextual details (exact location, depth measurement, and source) without unnecessary padding."
+    },
+    {
+      "query": "Which scientist formulated the laws of motion, and in what year was the Principia Mathematica published?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies Isaac Newton as the formulator of the laws of motion and provides the accurate publication year of 1687 for the Principia Mathematica. The tone is professional and appropriately structured with clear formatting, and the response is concise without unnecessary elaboration while still addressing all parts of the multi-part question."
+    },
+    {
+      "query": "What is the most spoken language in Brazil, and why is it different from its South American neighbors?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Portuguese as the most spoken language in Brazil and accurately explains the difference from South American neighbors (Portuguese colonization vs. Spanish colonization), addressing all parts of the question. The tone is professional and neutral with appropriate structure, though the response includes some mildly tangential information (e.g., 'Brazil is the world's most populous Portuguese-speaking country') that, while accurate and relevant, slightly extends beyond what's necessary to answer the core question."
+    },
+    {
+      "query": "Who was the architect of the Sagrada Familia, and when is it expected to be completed?",
+      "scores": {
+        "correctness": 2,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies Antoni Gaud\u00ed as the architect with accurate historical details, but fails to provide the expected completion date (around 2026) that was part of the multi-part question, stating instead that the source materials don't contain this information. The tone is professional and well-structured, and the response length is appropriate for the query without unnecessary padding."
+    },
+    {
+      "query": "What is the largest island in the Mediterranean Sea, and which country does it belong to?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies Sicily as the largest Mediterranean island and correctly attributes it to Italy, addressing all parts of the multi-part question. The tone is professional and neutral with appropriate structure, and the response is concise while providing relevant supporting information (population) without unnecessary padding."
+    },
+    {
+      "query": "Who developed the polio vaccine, and did he patent it?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly answers both parts of the question: Jonas Salk developed the vaccine and did not patent it. The tone is professional and well-structured with appropriate citations. However, the response includes somewhat unnecessary detail about patent exploration efforts, making it slightly more verbose than needed for a straightforward factual question."
+    },
+    {
+      "query": "What is the official language of Ethiopia, and what writing system does it use?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies both the official language (Amharic) and writing system (Ge\u02bdez script/Ethiopic script), directly matching the ground truth. The tone is professional and neutral with clear structure, and the response is concise while providing helpful context about the script type and directionality without unnecessary padding."
+    },
+    {
+      "query": "Who painted Guernica, and what event inspired it?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Pablo Picasso as the painter and the bombing of Guernica during the Spanish Civil War as the inspiration, fully answering both parts of the multi-part question. The tone is professional and well-structured with appropriate citations. However, the response includes somewhat excessive contextual details (specific military units, current museum location, creation location) that, while informative, go beyond what the straightforward question requires."
+    },
+    {
+      "query": "What is the longest bone in the human body, and roughly what fraction of a person's height does it make up?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies the femur as the longest bone and provides the correct fraction (25-30%, aligning with the ground truth of approximately one quarter), addressing all parts of the question accurately. The tone is professional and appropriate for a research assistant with proper citations. However, the response is somewhat verbose with unnecessary explanation of the reasoning behind the percentage estimate and repeated hedging about search results, when a more concise answer would have sufficed."
+    },
+    {
+      "query": "Which two countries share the longest international border, and approximately how long is it?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Canada and the United States and provides the accurate total border length of 8,891 km, addressing all parts of the question. The tone is professional and well-structured with appropriate citations, though the additional breakdown of land versus Alaska borders, while informative and accurate, adds some tangential detail beyond what the question strictly requires."
+    },
+    {
+      "query": "Who was the first woman to win a Nobel Prize, and in which two fields did she win?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies Marie Curie as the first woman to win a Nobel Prize and accurately lists both fields (Physics in 1903 and Chemistry in 1911) with proper context. The tone is professional and well-structured with appropriate formatting, and the length is concise while providing helpful supplementary information about her unique achievement."
+    },
+    {
+      "query": "What is the oldest university in the world that is still operating, and where is it located?",
+      "scores": {
+        "correctness": 2,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies the University of Bologna and its location, but incompletely addresses the multi-part question by omitting the University of al-Qarawiyyin, which predates Bologna and is widely recognized as the world's oldest continuously operating university. The tone is professional and well-structured, and the response is appropriately concise without unnecessary padding."
+    },
+    {
+      "query": "What is the Great Red Spot on Jupiter, and approximately how long has it been observed?",
+      "scores": {
+        "correctness": 2,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies the Great Red Spot as an anticyclonic storm but significantly underestimates its observational history by citing 193 years (1831 onward) instead of the ground truth of at least 350 years (since the 17th century), directly contradicting the context provided. The tone and structure are professional and appropriate, but the inclusion of tangential details about wind speeds and color origin, combined with the lengthy explanation about the 1665-1713 observations, makes the response somewhat verbose for a straightforward two-part question."
+    }
+  ]
+}

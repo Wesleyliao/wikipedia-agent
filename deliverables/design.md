@@ -49,7 +49,7 @@ The evolution of the system instructions can be found in `prompts/system_instruc
 
 ### V0 -> V1
 
-This compared a very simple generated V0 prompt with an initial designed one. Summary report in `eval_outputs/2026-02-22_00-08-25/report.md`
+This compared a very simple generated V0 prompt with an initial designed one. Summary report in `eval_outputs/2026-02-24_11-43-09/report.md`
 
 - V1 was skipping search_wikipedia for well-known topics like literary plot summaries and scientific concepts because it relied on its own confidence to decide whether to search. These caused a recall drop in triggering and and weak scores in disambiguation.
   > **Attempted Fix**: mentioned that the tool is required for any real-world topic for groundedness even if it knew the answer.

@@ -10,7 +10,7 @@ import anthropic
 from src.agent import AgentResult
 from src.utils import create_with_retries
 
-MAX_EVAL_CONCURRENCY = 3
+MAX_EVAL_CONCURRENCY = 2
 
 
 @dataclass
