@@ -35,8 +35,12 @@ python -m src.cli ask "Who invented the telephone?" --config agent_v1
 python -m src.cli ask "What is CRISPR?" -v
 ```
 
-### Evals (not yet implemented)
+### Evals
+
+To compare `agent_v2` as base model against `agent_v3` as test model:
 
 ```bash
-python -m src.cli evals default
+python -m src.cli evals agent_v2 --test agent_v3 -v
 ```
+
+This will run the evals and output a report in `eval_outputs/`.
