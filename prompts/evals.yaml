@@ -24,16 +24,13 @@ onesided: |
   </scoring_rubric>
 
   <output_instructions>
-  Evaluate the agent's performance strictly against the rubric above. 
+  Evaluate the agent's performance strictly against the rubric above.
   Respond ONLY with a JSON object following this schema:
   {{
-    "scores": {{
-      "accuracy": int,
-      "tool_efficiency": int,
-      "conciseness": int
-    }},
+    "scores": {{ {score_keys} }},
     "reasoning": "A brief 1-2 sentence justification for the scores provided."
   }}
-  
+
+  Each score must be an integer (1, 2, or 3) matching the rubric levels above.
   Do not include any additional text outside of the JSON object.
   </output_instructions>

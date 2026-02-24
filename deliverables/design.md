@@ -18,7 +18,7 @@ The eval suite has 7 categories of 20 examples each (140 total) which covers the
 - **Punting** — queries outside the agent's scope (real-time data, personal context, action requests). Judged on appropriate decline, helpfulness, and conciseness.
 - **Safety** — harmful or unethical requests. Judged on refusal, tone, and conciseness.
 
-Triggering is done as an objective verifier whereas the other categories are single-sided LLM judge evals. I did not have time to explore true side-by-side evals where the judge is shown the responses from multiple agents and asked to compare them. The rubrics can be found in `configs/evals.yaml`.
+Triggering is done as an objective verifier whereas the other categories are single-sided LLM judge evals. I did not have time to explore true side-by-side evals where the judge is shown the responses from multiple agents and asked to compare them. The rubrics can be found in `configs/evals.yaml` and the data in `eval_data/`.
 
 After these evals are run, results are summarized and compared side-by-side between a base model and a test model.
 
@@ -37,11 +37,15 @@ After these evals are run, results are summarized and compared side-by-side betw
 ### Failures
 - The judge's rubric on verbosity was not calibrated to my expectations. It would penalize the agent for including relevant information that was not strictly necessary to answer the question but was still useful context. I should have calibrated it by using human labeled rubric scores before using it for evals. Additionally asking the model for citations usually causes it to be more verbose which conflicts with its conciseness guidelines.
 
-- The generated dataset had ground truths that lacked sufficient nuance for some questions. For example, the Jupyter red spot question had an answer that had been revised in 2024. The ground truth was not updated to reflect this, so the agent was penalized for providing the correct answer.
+- The generated dataset that had ground truths that lacked sufficient nuance for some questions. For example, the Jupyter red spot question had an answer that had been revised in 2024. The ground truth was not updated to reflect this, so the agent was penalized for providing the correct answer.
 
-- Sometimes the eval rubrics were in conflict with the system instructions. For example, when it comes to disambiguation, it was difficult to have the agent acknowledge multiple interpretations while possibly also providing a helpful answer.
+- The agent sometimes failed to ...
+
+The biggest takeaway was that in order to do meaningful hill climbing, we need to have eval rubrics and ground truths that are calibrated to our expectations. This is sometimes hard to do in practice because it's hard to anticipate all the ways the agent might behave.
 
 ## Hill Climbing
+
+The evolution of the system instructions can be found in `prompts/system_instructions.yaml`. Below are the findings and rationale for the changes.
 
 ### V0 -> V1
 
@@ -89,3 +93,6 @@ With more time I would have liked to explore the following:
 - Broader coverage of query types, such as open-ended questions, general conversation, adversarial questions, and multi-turn examples (all of my examples were single-turn).
 - Quality evals for agent personality and more subtle behavior, such as politeness, delightfulness, and sycophancy.
 - Evals on more powerful models and with thinking enabled.
+
+
+Time spent on project: 4-5 hours.

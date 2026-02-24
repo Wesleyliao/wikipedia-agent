@@ -10,7 +10,7 @@ import anthropic
 from src.agent import AgentResult
 from src.utils import create_with_retries
 
-MAX_EVAL_CONCURRENCY = 2
+MAX_EVAL_CONCURRENCY = 3
 
 
 @dataclass
@@ -55,6 +55,10 @@ def _format_score_keys(dimensions: dict[str, str]) -> str:
     return ", ".join(f'"{name}": N' for name in dimensions)
 
 
+class JudgeParseError(Exception):
+    """Raised when the judge response cannot be parsed into valid scores."""
+
+
 def _parse_scores(
     judge_response: str,
     dimensions: dict[str, str],
@@ -62,25 +66,46 @@ def _parse_scores(
     """Parse multi-dimension scores from judge JSON response.
 
     Returns (scores_dict, explanation).
-    """
-    # Try to extract JSON from the response
-    try:
-        # Find JSON object in response
-        match = re.search(r"\{.*\}", judge_response, re.DOTALL)
-        if match:
-            data = json.loads(match.group())
-            raw_scores = data.get("scores", {})
-            explanation = data.get("reasoning", data.get("explanation", ""))
-            scores = {}
-            for dim in dimensions:
-                val = raw_scores.get(dim, 2)
-                scores[dim] = max(1, min(3, int(val)))
-            return scores, explanation
-    except (json.JSONDecodeError, ValueError, TypeError):
-        pass
 
-    # Fallback: default scores
-    return {dim: 2 for dim in dimensions}, f"[PARSE ERROR] {judge_response}"
+    Raises:
+        JudgeParseError: If the response is not valid JSON or is missing
+            expected dimension keys / has out-of-range values.
+    """
+    match = re.search(r"\{.*\}", judge_response, re.DOTALL)
+    if not match:
+        raise JudgeParseError(f"No JSON object found in judge response: {judge_response!r}")
+
+    try:
+        data = json.loads(match.group())
+    except json.JSONDecodeError as e:
+        raise JudgeParseError(
+            f"Invalid JSON in judge response: {e}\nRaw: {judge_response!r}"
+        ) from e
+
+    raw_scores = data.get("scores")
+    if not isinstance(raw_scores, dict):
+        raise JudgeParseError(f"Judge response missing 'scores' dict. Got: {data!r}")
+
+    missing = set(dimensions) - set(raw_scores)
+    if missing:
+        raise JudgeParseError(
+            f"Judge response missing dimension keys {missing}. "
+            f"Got keys: {set(raw_scores)}. Raw: {judge_response!r}"
+        )
+
+    scores = {}
+    for dim in dimensions:
+        val = raw_scores[dim]
+        try:
+            int_val = int(val)
+        except (ValueError, TypeError) as e:
+            raise JudgeParseError(f"Non-integer score for '{dim}': {val!r}") from e
+        if int_val not in (1, 2, 3):
+            raise JudgeParseError(f"Score for '{dim}' out of range [1, 3]: {int_val}")
+        scores[dim] = int_val
+
+    explanation = data.get("reasoning", data.get("explanation", ""))
+    return scores, explanation
 
 
 def judge_onesided(
