@@ -4,7 +4,7 @@
 
 The agent design aimed to be highly configurable so it's easy to do side-by-side evals. It is also versioned so I can keep track of all changes along the way. The prompt design uses well defined blocks that specify the agent's role, principles, tools and response format. It goes from very general, high-level instructions to very specific instructions.
 
-The agent and judge model was chosen to be `claude-haiku-4-5-20251001` without extended thinking due to budget constraints. 
+The agent and judge model was chosen to be `claude-haiku-4-5-20251001` without extended thinking due to budget constraints. The tool used was MediaWiki API.
 
 ## Eval Design
 
@@ -26,7 +26,7 @@ After these evals are run, results are summarized and compared side-by-side betw
 
 ### Successes
 
-- The agent provides correct, helpful, and grounded answers. In terms of eval scores, direct correctness is perfect, adversarial groundedness is near perfect, and safety refusal is perfect. This means the agent is obeying safety guardrails well, not hallucinating even when the user is trying to trick it, and can give correct answers to queries.
+- The agent provides correct, helpful, and grounded answers. In terms of eval scores, direct correctness is perfect, adversarial groundedness is near perfect, and safety refusal is perfect. This means the agent is obeying safety guardrails well, not hallucinating even when the user is trying to trick it, and can give correct answers to queries. Tone and style also were consistently good across all evals.
 
 - The agent handles out-of-scope queries gracefully. Punting had perfect scores on appropriateness and helpfulness, meaning the agent consistently declines unanswerable questions while offering useful alternatives. Safety refusals are equally strong.
 
@@ -70,7 +70,7 @@ Summary report in `eval_outputs/2026-02-24_12-57-16/report.md`.
 - V2 has slight regression in multi-step correctness. It seems to be occuring to superlative questions, where there could be multiple valid answers depending on the interpretation of the question. For example the longest border vs longest continuous border.
   > **Attempted Fix**: add approach on how to handle superlative questions with multiple possible interpretations in MULTI-PART QUESTIONS.
 
-- V2 has a very slight regression in verbosity, especially in the direct dataset. V2 adds tangentially relevant context beyond what's asked.
+- V2 has a slight regression in verbosity, especially in the direct dataset. V2 adds tangentially relevant context beyond what's asked.
   > **Attempted Fix**: in `<response_format>` remove the citation requirement and add a sentence about only providing extra context if it's necessary to fully answer the question.
 
 ### V2 -> V3
@@ -87,7 +87,7 @@ Summary report in `eval_outputs/2026-02-24_17-03-19/report.md`.
   > **Observation**: this highlights issues both in the SI in terms of tool use failures (no second search to verify superlatives), and the dataset in terms of ground truth labels lacking nuance for debatable questions.
 
 - Safety verbosity regressed (-0.2) while punting verbosity improved (+0.2). In punting, V3 trimmed alternative lists and removed redundant explanations. In safety, V3 responded with some additional info on specific help programs in the form of bullet points (e.g. SNAP, TANF, and housing assistance for a shoplifting refusal).
-  > **Observation**: this highlights the need for response-type specific verbosity constraints as well as response-type specific rubrics for verbosity in the judge."
+  > **Observation**: this highlights the need for response-type specific verbosity constraints as well as response-type specific rubrics for verbosity in the judge.
 
 
 ## Future Work
@@ -97,7 +97,7 @@ With more time I would have liked to explore the following:
 - More thorough groundedness eval, where the results of the search results are shown to the judge. This would allow the judge to determine if the answers are grounded in the content of the search results.
 - True side-by-side evals where the judge is shown the responses from multiple agents and asked to compare them. This would allow for more nuanced comparisons between agents.
 - More nuanced treatment of verbosity, specifically defining different expected behavior for different eval types and reflecting that in the rubrics.
-- Broader coverage of query types, such as open-ended questions, general conversation, adversarial questions, and multi-turn examples (all of my examples were single-turn).
+- Broader coverage of query types, such as open-ended questions, general conversation, adversarial questions, and multi-turn examples (all of my examples were single-turn). Also more examples for each eval type since 20 is quite low for getting statistically significant signal.
 - Quality evals for agent personality and more subtle behavior, such as politeness, delightfulness, and sycophancy.
 - Evals on more powerful models and with thinking enabled.
 
