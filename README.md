@@ -22,7 +22,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 ### Ask a question
 
 ```bash
-python -m src.cli ask "What is quantum entanglement?"
+python -m src.cli ask "What is quantum entanglement?" -v
 ```
 
 ### Options
@@ -31,7 +31,7 @@ python -m src.cli ask "What is quantum entanglement?"
 # Use a different agent config
 python -m src.cli ask "Who invented the telephone?" --config agent_v1
 
-# Verbose mode (prints tool calls to stderr)
+# Verbose mode (prints tool calls)
 python -m src.cli ask "What is CRISPR?" -v
 ```
 
