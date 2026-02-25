@@ -1,0 +1,196 @@
+{
+  "dataset": "direct",
+  "side": "test",
+  "dimensions": [
+    "correctness",
+    "tone_and_style",
+    "verbosity"
+  ],
+  "mean_scores": {
+    "correctness": 3.0,
+    "tone_and_style": 2.95,
+    "verbosity": 2.05
+  },
+  "items": [
+    {
+      "query": "What is the capital of Australia?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Canberra as Australia's capital and provides accurate context about its location and founding. The tone is professional and well-structured, though the additional historical detail about the 1901 compromise, while accurate and interesting, slightly exceeds what was asked for a straightforward factual question."
+    },
+    {
+      "query": "Who wrote the novel 1984?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies George Orwell as the author of 1984, matching the ground truth perfectly. The tone is professional and well-structured with appropriate citations. However, the response includes additional contextual details (publication date, publisher, and book number) that, while accurate and potentially useful, exceed what was necessary to answer the straightforward query."
+    },
+    {
+      "query": "What year did the Titanic sink?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies 1912 as the year the Titanic sank, matching the ground truth exactly. The tone is professional and neutral, appropriate for a research assistant. The response includes additional context (specific date and location) that, while not strictly necessary to answer the question, provides helpful historical detail without becoming excessive."
+    },
+    {
+      "query": "What is the chemical symbol for gold?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly provides 'Au' as the chemical symbol for gold, matching the ground truth exactly. The tone is professional and well-structured with appropriate use of formatting. While the additional etymological context about the Latin origin is helpful and educational, it goes slightly beyond what was asked in a straightforward factual question, making the response somewhat verbose for the specific query."
+    },
+    {
+      "query": "Who painted the Mona Lisa?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Leonardo da Vinci as the painter and matches the ground truth perfectly. The tone is professional and well-structured with appropriate citation. However, the response includes additional contextual details (subject identity, time period, current location) that, while accurate and educational, exceed what was asked in the straightforward factual question."
+    },
+    {
+      "query": "What is the tallest mountain in the world?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Mount Everest as the answer to the ground truth question, then provides valuable context about the distinction between 'highest' and 'tallest' with proper citations. While the additional explanation about Mauna Kea is informative and educational, it goes slightly beyond what was asked for, making the response somewhat verbose for a straightforward factual query."
+    },
+    {
+      "query": "What language is most spoken natively worldwide?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Mandarin Chinese as the most spoken native language worldwide with accurate speaker counts, uses a professional and well-structured format with proper citations. However, it includes slightly more information than necessary by explaining the distinction between native and total speakers, which, while helpful, goes somewhat beyond what the query specifically asked for."
+    },
+    {
+      "query": "Who discovered penicillin?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Alexander Fleming as the discoverer of penicillin with accurate details about the 1928 discovery. The tone is professional and well-structured with proper formatting. However, the response includes additional context about Florey and Chain's later work that, while historically relevant and interesting, goes beyond what was asked in the straightforward factual question, making it somewhat verbose."
+    },
+    {
+      "query": "What planet is known as the Red Planet?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 3
+      },
+      "explanation": "The response correctly identifies Mars as the Red Planet and provides a brief, accurate explanation for why it has this nickname. The tone is professional and neutral, and the length is appropriately concise for the straightforward factual question asked."
+    },
+    {
+      "query": "What is the largest ocean on Earth?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies the Pacific Ocean as the largest ocean with accurate supporting details (area in both metric and imperial units, percentage coverage). The tone is professional and well-structured with appropriate formatting. The response is slightly verbose by including specific statistics and percentages beyond the direct question, though this information is still relevant and helpful for a research assistant context."
+    },
+    {
+      "query": "Who was the first person to walk on the Moon?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Neil Armstrong as the first person to walk on the Moon with accurate details about the Apollo 11 mission and specific date/time information. The tone is professional and well-structured with appropriate sourcing; however, the additional contextual details about the landing time and Lunar Module name, while informative, go slightly beyond what was asked in the straightforward factual question."
+    },
+    {
+      "query": "What is the currency of Japan?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies the yen as Japan's currency with proper formatting and a credible citation, maintaining a professional and neutral tone. However, the additional information about it being the third-most traded currency, while accurate and potentially useful, slightly exceeds what was necessary for a straightforward factual question."
+    },
+    {
+      "query": "What is the smallest country in the world by area?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Vatican City as the smallest country and provides accurate supporting details (area measurements, location, and governance). The tone is professional and well-structured with proper sourcing, though the additional contextual information about the pope and Catholic Church, while accurate and interesting, slightly exceeds what was strictly necessary to answer the factual question."
+    },
+    {
+      "query": "Who developed the theory of general relativity?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Albert Einstein as the developer of general relativity with accurate supporting details (publication date, relationship to special relativity and Newton's work). The tone is professional and well-structured with proper citations; however, the additional context about what the theory does, while informative, goes slightly beyond what was asked in the straightforward factual question."
+    },
+    {
+      "query": "What is the longest river in Africa?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies the Nile as the longest river in Africa and matches the ground truth. The tone is professional and well-structured with appropriate formatting. However, the inclusion of the world record fact and specific length measurements, while informative, slightly exceeds what was asked in the straightforward factual query."
+    },
+    {
+      "query": "What year did World War II end?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly answers the core question with 1945 and provides accurate additional context about both European and Asian theaters of war, maintaining a professional and well-structured tone. However, it is somewhat verbose for a straightforward factual question, as the additional details about specific surrender dates, while accurate and potentially useful, go beyond what was directly asked."
+    },
+    {
+      "query": "What is the atomic number of carbon?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies carbon's atomic number as 6, matching the ground truth exactly. The tone is professional and neutral with good structure using bold formatting. While the additional context about protons and carbon's role in organic chemistry is somewhat beyond what was asked, it provides valuable educational context without being excessive."
+    },
+    {
+      "query": "Who composed the Four Seasons?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies Antonio Vivaldi as the composer and matches the ground truth. The tone is professional and well-structured with proper formatting and a citation. While the additional context about composition dates and publication is informative, it exceeds what was strictly necessary for this straightforward factual question."
+    },
+    {
+      "query": "What is the largest desert in the world?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 2,
+        "verbosity": 2
+      },
+      "explanation": "The response correctly identifies the Antarctic Desert as the largest desert in the world, matching the ground truth answer. However, the response is somewhat verbose with repetitive phrasing (the answer is stated twice with similar wording) and an unnecessary preamble ('Perfect! I found the answer'), making it slightly informal for a research assistant tone."
+    },
+    {
+      "query": "What is the speed of light in a vacuum in meters per second?",
+      "scores": {
+        "correctness": 3,
+        "tone_and_style": 3,
+        "verbosity": 2
+      },
+      "explanation": "The response provides the exact correct value (299,792,458 m/s) matching the ground truth, with professional tone and clear formatting. However, the additional context about the symbol 'c' and relativity theory, while accurate and educational, exceeds what was directly asked for, making it slightly verbose for a straightforward factual question."
+    }
+  ]
+}

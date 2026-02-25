@@ -52,30 +52,32 @@ The evolution of the system instructions can be found in `prompts/system_instruc
 This compared a very simple generated V0 prompt with an initial designed one. Summary report in `eval_outputs/2026-02-24_11-43-09/report.md`
 
 - V1 was skipping search_wikipedia for well-known topics like literary plot summaries and scientific concepts because it relied on its own confidence to decide whether to search. These caused a recall drop in triggering and and weak scores in disambiguation.
-  > **Attempted Fix**: mentioned that the tool is required for any real-world topic for groundedness even if it knew the answer.
+  > **Attempted Fix**: mentioned that the tool is required for any real-world topic for groundedness even if it knew the answer both in the system instruction and in the tool description.
 
-- V1 was picking the dominant interpretation of ambiguous terms (e.g. "jaguar" the animal, "renaissance" the European art movement) without checking whether the term had multiple well-known referents. This caused poor performance in disambiguation.
-  > **Attempted Fix**: added parts to the prompt to always acknowledge possible ambiguity even if one interpretation is more likely.
+- V1 sometimes picked the dominant interpretation for ambiguous terms like Mercury, Python, Amazon, and Java without acknowledging alternatives. This causes poor performance in disambiguation and could lead to bad user experience if the model guessed incorrectly.
+  > **Attempted Fix**: added a `<disambiguation>` section instructing the model to check whether the key noun has multiple well-known referents and ask for clarification even if one seems more likely.
 
-- V1 was more verbose than desired, and references Wikipedia unnecessarily such as saying "the Wikipedia article does not contain this information".
-  > **Attempted Fix**: in <response_format> block added instructions on limiting the amount of unnecessary detail in responses.
+- V1's multi-step correctness scores dropped from 2.9 to 2.7. V1 missed sub-parts of compound questions (e.g. Sagrada Familia completion date not found). V1 doesn't issue enough searches for multi-part questions.
+  > **Attempted Fix**: added MULTI-PART QUESTIONS guidance in `<tool_usage_guidelines>` instructing the model to search for each part independently.
 
 ### V1 -> V2
 
-Summary report in `eval_outputs/2026-02-22_21-04-30/report.md`.
+Summary report in `eval_outputs/2026-02-24_12-57-16/report.md`.
 
-- V2 was lacking in full correctness scores for both direct and multi-step. Some examples showed that the agent was not answering all parts of the question (e.g. highest melting point and who discovered it? only answered the first part) while some showed poor search quality when there is ambiguous information on the Wikipedia page (e.g. question on Jupiter's red spot).
-  > **Attempted Fix**: Added a sub-section in <tool_usage_guidelines> for multi-part and query refinement to encourage the model to issue more queries as needed for better grounding.
+- V2 achieved perfect 100% across all triggering metrics (up from 85% acc / 73% recall). The broadened WHEN TO USE SEARCH from the previous iteration fully resolved triggering. No further fix needed.
 
-- V2 was still lacking in disambiguation scores because it would still pick the dominant interpretation of ambiguous terms.
-  > **Attempted Fix**: Flushed out <disambiguation> section in the system instructions to be more explicit about how to handle ambiguous terms. Specifically around acknowledgement and tying together related interpretations.
+- V2 has improved disambiguation by 0.5, but 6 of the 20 queries still score 1. We'll need to reinforce the importance of disambiguation and make it more objective.
+  > **Attempted Fix**: strengthen `<disambiguation>` with rationale of why we need to disambiguate and add more detailed instructions on how to handle ambiguous queries with a logical structure.
 
-- V2 was still too verbose according to the scores, although upon further inspection I think the scores may be too strict on verbosity. For example the response for "Who wrote the novel 1984?" was penalized for mentioning the publication date. Other examples showed that it was citing Wikipedia which was in its system instructions.
-  > **Attempted Fix**: I did not alter the judge prompt for consistency but instead made small tweaks to <response_format> system instructions.
+- V2 has slight regression in multi-step correctness. It seems to be occuring to superlative questions, where there could be multiple valid answers depending on the interpretation of the question. For example the longest border vs longest continuous border.
+  > **Attempted Fix**: add approach on how to handle superlative questions with multiple possible interpretations in MULTI-PART QUESTIONS.
+
+- V2 has a very slight regression in verbosity, especially in the direct dataset. V2 adds tangentially relevant context beyond what's asked.
+  > **Attempted Fix**: in `<response_format>` remove the citation requirement and add a sentence about only providing extra context if it's necessary to fully answer the question.
 
 ### V2 -> V3
 
-Summary report `eval_outputs/2026-02-23_22-29-04`.
+Summary report in `eval_outputs/2026-02-24_17-03-19/report.md`.
 
 - V3 has a slight regression in disambiguation. Previously clarifying queries like "what is amazon?" now silently pick one interpretation without noting alternatives. Many of the failures from V2 remain.
   > **Possible Explaination**: the `disambiguation_handling` rubric scores 3 only when multiple interpretations are acknowledged. The SI prompt allows answering the likely interpretation with a trailing note — but the judge still scored those as 2 rather than 3, so the rubric and SI are misaligned.
