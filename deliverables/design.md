@@ -12,11 +12,11 @@ The eval suite has 7 categories of 20 examples each (140 total) which covers the
 
 - **Triggering** — does the agent invoke the Wikipedia tool when and only when appropriate? Evaluated as binary pass/fail on the trajectory (objective, no LLM judge needed). Metrics are accuracy, precision, recall, and f1.
 - **Direct** — single-fact lookup accuracy against ground truth. Judged on correctness, tone, and verbosity.
-- **Multistep** — compound questions requiring multiple facts. Same rubric as direct, but correctness requires all parts answered.
+- **Multi-step** — compound questions requiring multiple facts. Same rubric as direct, but correctness requires all parts answered. This is to test the agent's ability to chain together multiple tool calls to answer a complex question.
 - **Adversarial grounding** — queries containing false premises (e.g. "Why did Napoleon lose at Waterloo to the Americans?"). Judged on whether the agent catches and corrects the false premise rather than building on it.
 - **Disambiguation** — short ambiguous queries with multiple valid interpretations. Judged on whether the agent acknowledges multiple interpretations rather than silently picking one.
-- **Punting** — queries outside the agent's scope (real-time data, personal context, action requests). Judged on appropriate decline, helpfulness, and conciseness.
-- **Safety** — harmful or unethical requests. Judged on refusal, tone, and conciseness.
+- **Punting** — queries outside the agent's scope (real-time data, personal context, action requests). Judged on whether the agent gracefully declines and provides helpful alternatives.
+- **Safety** — harmful or unethical requests. Judged on refusal, tone, and conciseness. It is expected that the agent should respectfully decline and offer helpful / safe / empathetic alternatives.
 
 Triggering is done as an objective verifier whereas the other categories are single-sided LLM judge evals. I did not have time to explore true side-by-side evals where the judge is shown the responses from multiple agents and asked to compare them. The rubrics can be found in `configs/evals.yaml` and the data in `eval_data/`.
 
@@ -26,22 +26,20 @@ After these evals are run, results are summarized and compared side-by-side betw
 
 ### Successes
 
-- The agent can reliably answer questions that require multiple steps and facts in a safe and grounded manner while maintaining a helpful yet professional tone with well-structured responses.
+- The agent provides correct, helpful, and grounded answers. In terms of eval scores, direct correctness is perfect, adversarial groundedness is near perfect, and safety refusal is perfect. This means the agent is obeying safety guardrails well, not hallucinating even when the user is trying to trick it, and can give correct answers to queries.
 
-- The agent responds well to edge cases such as adversarial grounding questions and punts gracefully when the question is outside its scope.
+- The agent handles out-of-scope queries gracefully. Punting had perfect scores on appropriateness and helpfulness, meaning the agent consistently declines unanswerable questions while offering useful alternatives. Safety refusals are equally strong.
 
-- The agent performed well on safety questions, refusing to answer harmful or unethical requests.
-
-- Through hill climbing we were able to improve the agent's triggering behavior and disambiguation behavior to an extent.
+- Hill climbing produced measurable gains where the fix matched the failure mode. Triggering went from 85% accuracy / 73% recall (V1) to a perfect 100% (V2) by loosening the criteria on when the tool should be used. Adversarial grounding verbosity improved by +0.3 (V2 to V3) after removing the citation requirement.
 
 ### Failures
-- The judge's rubric on verbosity was not calibrated to my expectations. It would penalize the agent for including relevant information that was not strictly necessary to answer the question but was still useful context. I should have calibrated it by using human labeled rubric scores before using it for evals. Additionally asking the model for citations usually causes it to be more verbose which conflicts with its conciseness guidelines.
+- The judge's rubric on verbosity was not calibrated to my expectations. It would penalize the agent for including relevant information that was not strictly necessary to answer the question but was still useful context. Also different types of responses should have different expectations for verbosity which I did not account for in both the SI nor the eval rubrics. I should have 1) calibrated it by using human labeled rubric scores before using it for evals and 2) used different SI and verbosity score definitions for different types of responses.
 
-- The generated dataset that had ground truths that lacked sufficient nuance for some questions. For example, the Jupyter red spot question had an answer that had been revised in 2024. The ground truth was not updated to reflect this, so the agent was penalized for providing the correct answer.
+- The generated dataset that had ground truths that lacked sufficient nuance for some questions. For example, the Jupyter red spot question had an answer that had been revised in 2024 and the ambiguous melting point question. The ground truth was not updated to reflect this nuance, so the agent was penalized for providing an arguably correct answer.
 
-- The agent sometimes failed to ...
+- Disambiguation was unsolved. Despite three iterations of prompt refinement, the agent still fails to disambiguate terms where one meaning strongly dominates (e.g. jaguar, cell, saturn). The model's prior about which meaning is intended is so strong the prompt changes could not override it. Trying a more nuanced disambiguation strategy in V3 ("answer the likely interpretation with a note") seemed to have backfired where the model used it as permission to skip disambiguation entirely in certain cases.
 
-The biggest takeaway was that in order to do meaningful hill climbing, we need to have eval rubrics and ground truths that are calibrated to our expectations. This is sometimes hard to do in practice because it's hard to anticipate all the ways the agent might behave.
+The biggest takeaway is that meaningful hill climbing requires eval rubrics and ground truths that are well-calibrated to expectations. When the rubric, the system instruction, and the ground truth aren't aligned, it's hard to tell whether a score change reflects a real improvement or just noise from the evaluation setup itself.
 
 ## Hill Climbing
 
@@ -79,11 +77,17 @@ Summary report in `eval_outputs/2026-02-24_12-57-16/report.md`.
 
 Summary report in `eval_outputs/2026-02-24_17-03-19/report.md`.
 
-- V3 has a slight regression in disambiguation. Previously clarifying queries like "what is amazon?" now silently pick one interpretation without noting alternatives. Many of the failures from V2 remain.
-  > **Possible Explaination**: the `disambiguation_handling` rubric scores 3 only when multiple interpretations are acknowledged. The SI prompt allows answering the likely interpretation with a trailing note — but the judge still scored those as 2 rather than 3, so the rubric and SI are misaligned.
+- V3's new disambiguation instruction, "if one interpretation is much more likely, provide that answer with a trailing note", seemed to have caused a slight regression by giving the model an "escape hatch". It also did not obey the trailing note instruction for the cases where it decided to provide the likely interpretation. V2's stricter rule ("always ask for clarification") was more reliable at forcing the behavior.
+  > **Observation**: there's some prompt-rubric misalignment. V3's SI suggestes answering the dominant interpretation with a brief note, but the rubric scores a 3 only when multiple interpretations are explicitly acknowledged. The model seems to use the "much more likely" case too often, effectively treating it as a way to skip disambiguation.
 
-- V3's multi-step correctness remained flat at 2.0. The new per-part search instruction did not resolve the two main misses: the tungsten discovery and the Great Red Spot observation history.
-  > **Further Analysis**: in both of those cases the ground truth label is potentially incorrect or at least does not reflect the nuance of multiple possible answers. This is a weakness in the dataset.
+- Removing the citation requirement improved adversarial grounding verbosity (+0.3) but had almost no net effect on direct. In adversarial grounding, dropping citations seemed to have cut preamble like "Based on the search results...". In direct, the model basically replaced citations with additional facts from the search results, making total length similar. The V3 instruction "only provide extra context if necessary" is probably too subjective.
+  > **Observation**: the direct verbosity problem is likely the model's tendency to try and pack lots of interesting tidbits into the answer even if they're not very related. The system instruction nudge needs to be more objective.
+
+- Multistep correctness remained flat despite new superlative-handling instructions. The agent still latches onto the first search result without issuing follow-up searches to check for competing candidates (e.g. the oldest university query). There's also an instance where the data point has debatable ground truth: the great red spot on Jupyter has an updated answer as of 2024. and another is a somewhat ambiguous scientific question (carbon vs tungsten "melting" point).
+  > **Observation**: this highlights issues both in the SI in terms of tool use failures (no second search to verify superlatives), and the dataset in terms of ground truth labels lacking nuance for debatable questions.
+
+- Safety verbosity regressed (-0.2) while punting verbosity improved (+0.2). In punting, V3 trimmed alternative lists and removed redundant explanations. In safety, V3 responded with some additional info on specific help programs in the form of bullet points (e.g. SNAP, TANF, and housing assistance for a shoplifting refusal).
+  > **Observation**: this highlights the need for response-type specific verbosity constraints as well as response-type specific rubrics for verbosity in the judge."
 
 
 ## Future Work
@@ -92,6 +96,7 @@ With more time I would have liked to explore the following:
 
 - More thorough groundedness eval, where the results of the search results are shown to the judge. This would allow the judge to determine if the answers are grounded in the content of the search results.
 - True side-by-side evals where the judge is shown the responses from multiple agents and asked to compare them. This would allow for more nuanced comparisons between agents.
+- More nuanced treatment of verbosity, specifically defining different expected behavior for different eval types and reflecting that in the rubrics.
 - Broader coverage of query types, such as open-ended questions, general conversation, adversarial questions, and multi-turn examples (all of my examples were single-turn).
 - Quality evals for agent personality and more subtle behavior, such as politeness, delightfulness, and sycophancy.
 - Evals on more powerful models and with thinking enabled.
